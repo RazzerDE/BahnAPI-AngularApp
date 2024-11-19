@@ -44,4 +44,4 @@ Thumbs.db
 /.idea/
 /.vscode/
 /coverage/
-.env
+/src/app/services/api-service/types/environment.ts

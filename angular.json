@@ -27,9 +27,7 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": [
-              "node -r dotenv/config"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {

@@ -4,6 +4,7 @@ import {NgClass} from "@angular/common";
 import {FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Datepicker, DatepickerOptions} from "flowbite";
 import {TableComponent} from "../../util/table/table.component";
+import {ApiService} from "../../services/api-service/api-service.service";
 
 @Component({
   selector: 'app-start-main',
@@ -32,7 +33,7 @@ export class StartMainComponent {
     ['09:30', 'RE 456', 'Regional', 'Hamburg Hbf', 'Köln Hbf', '3', 'Nein']
   ];
 
-  constructor() {
+  constructor(private api: ApiService) {
     this.pickedDate = new Date().toLocaleDateString('en-US');
   }
 
