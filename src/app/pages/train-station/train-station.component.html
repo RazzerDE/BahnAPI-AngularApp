@@ -1,1 +1,66 @@
-<p>train-station works!</p>
+<div class="dark:text-white">
+
+  <!-- Title of the Page -->
+  <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">Detailierte Ansicht von Bahnhöfen</h2>
+
+  <!-- Description of the Page -->
+    <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        Diese Seite bietet eine detaillierte Ansicht der Bahnhöfe, einschließlich ihrer Adressen, Betreiber,
+        Internetverfügbarkeit, Barrierefreiheit und lokalen Transportmöglichkeiten.
+      </p>
+    </div>
+
+  <!-- Current Train-Station indicator & Searchbar -->
+  <div class="grid grid-cols-2 gap-4 mt-11 mb-0 items-center">
+
+    <!-- Current Train-Station indicator -->
+    <h3 class="text-lg font-semibold">Aktueller Bahnhof: <span class="text-red-700">{{currentTrainStation}}</span></h3>
+
+    <!-- Searchbar -->
+    <div class="flex justify-center flex-1 justify-self-end h-10 mb-2">
+      <div class="relative focus-within:text-red-500">
+        <div class="absolute inset-y-0 flex items-center pl-2">
+
+          <!-- Search-Icon -->
+          <svg class="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+
+        <!-- Search-Input -->
+        <input id="searchStation" class="mt-0 w-full h-10 pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0
+        rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600
+        dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:outline-none
+        focus:shadow-outline-purple form-input" type="text" placeholder="Bahnhof suche" aria-label="Search"
+        (keyup.enter)="changeTrainStation()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <table class="w-full whitespace-no-wrap mt-0">
+
+    <!-- Table-headers -->
+    <thead>
+    <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+      <th class="px-4 py-3">Adresse/Koordinaten</th>
+      <th class="px-4 py-3">Betreiber</th>
+      <th class="px-4 py-3">Internet vorhanden</th>
+      <th class="px-4 py-3">barrierefrei</th>
+      <th class="px-4 py-3">hat lokale Transportmöglichkeiten</th>
+    </tr>
+    </thead>
+    <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+
+    <!-- Table-rows -->
+    <tr class="text-gray-700 dark:text-gray-400 hover:bg-gray-700/30">
+      <td class="px-4 py-3">123 Main St, 40.7128° N, 74.0060° W</td>
+      <td class="px-4 py-3">Company A</td>
+      <td class="px-4 py-3">Yes</td>
+      <td class="px-4 py-3">Yes</td>
+      <td class="px-4 py-3">Yes</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

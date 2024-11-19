@@ -8,5 +8,13 @@ import { Component } from '@angular/core';
   styleUrl: './train-station.component.css'
 })
 export class TrainStationComponent {
+  public currentTrainStation: string = "Mageburg Hbf";
 
+  changeTrainStation(): void {
+    const searchInput = document.getElementById('searchStation') as HTMLInputElement;
+    if (searchInput.value === '' || searchInput.value.startsWith(' ')) {
+      return;
+    }
+    this.currentTrainStation = searchInput.value;
+  }
 }
