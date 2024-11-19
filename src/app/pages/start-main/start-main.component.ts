@@ -3,6 +3,7 @@ import {RouterLink} from "@angular/router";
 import {NgClass} from "@angular/common";
 import {FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Datepicker, DatepickerOptions} from "flowbite";
+import {TableComponent} from "../../util/table/table.component";
 
 @Component({
   selector: 'app-start-main',
@@ -10,7 +11,8 @@ import {Datepicker, DatepickerOptions} from "flowbite";
   imports: [
     RouterLink,
     NgClass,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TableComponent
   ],
   templateUrl: './start-main.component.html',
   styleUrl: './start-main.component.css'
@@ -23,6 +25,12 @@ export class StartMainComponent {
   protected showRoutePlaning: boolean = false;
   protected pickedDate: string;
   private datepicker: Datepicker | undefined;
+
+  public tableHeader: string[] = ['Uhrzeit', 'Zugname','Zugart', 'Herkunftsbahnhof', 'Zielbahnhof', 'Gleis', 'Fahrstuhl vorhanden'];
+  public tableData: string[][] = [
+    ['08:00', 'ICE 123', 'ICE', 'Berlin Hbf', 'München Hbf', '5', 'Ja'],
+    ['09:30', 'RE 456', 'Regional', 'Hamburg Hbf', 'Köln Hbf', '3', 'Nein']
+  ];
 
   constructor() {
     this.pickedDate = new Date().toLocaleDateString('en-US');
