@@ -1,18 +1,17 @@
-<div class="overflow-x-auto overflow-y-auto h-96">
+<div class="overflow-x-auto rounded-lg shadow-xl">
   <!-- Table -->
   <table class="w-full whitespace-no-wrap mt-0 table-fixed">
 
     <!-- Table-headers -->
     <thead>
-    <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700
-             bg-gray-50 dark:text-gray-400 dark:bg-gray-800"
-    >
-    @for (column of columns; track columns) {
-        <th class="px-4 py-3">{{ column }}</th>
-      }
-    </tr>
+      <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700
+               bg-gray-200/50 dark:text-gray-400 dark:bg-gray-800/40">
+        @for (column of columns; track columns) {
+            <th class="px-4 py-3">{{ column }}</th>
+          }
+      </tr>
     </thead>
-    <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800 overflow-y-auto max-h-96">
+    <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800 overflow-y-auto">
     <!-- Table-rows -->
       @for (row of rows; track $index) {
         <tr class="text-gray-700 dark:text-gray-400 hover:bg-gray-700/30">
