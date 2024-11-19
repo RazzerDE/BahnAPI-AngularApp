@@ -39,28 +39,7 @@
   </div>
 
   <!-- Table -->
-  <table class="w-full whitespace-no-wrap mt-0">
-
-    <!-- Table-headers -->
-    <thead>
-    <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-      <th class="px-4 py-3">Adresse/Koordinaten</th>
-      <th class="px-4 py-3">Betreiber</th>
-      <th class="px-4 py-3">Internet vorhanden</th>
-      <th class="px-4 py-3">barrierefrei</th>
-      <th class="px-4 py-3">hat lokale Transportmöglichkeiten</th>
-    </tr>
-    </thead>
-    <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-
-    <!-- Table-rows -->
-    <tr class="text-gray-700 dark:text-gray-400 hover:bg-gray-700/30">
-      <td class="px-4 py-3">123 Main St, 40.7128° N, 74.0060° W</td>
-      <td class="px-4 py-3">Company A</td>
-      <td class="px-4 py-3">Yes</td>
-      <td class="px-4 py-3">Yes</td>
-      <td class="px-4 py-3">Yes</td>
-    </tr>
-    </tbody>
-  </table>
+  <app-table [columns]=tableHeaders
+             [rows]=tableData>
+  </app-table>
 </div>
