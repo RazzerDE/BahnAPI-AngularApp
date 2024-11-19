@@ -41,7 +41,7 @@ export class StartMainComponent {
       autohide: true,
       format: 'mm/dd/yyyy',
       autoSelectToday: 1,
-      onHide: () => { this.setTrainStationDate(); }
+      // onHide: () => { this.setTrainStationDate(); } currently broken in flowbite
     };
     this.datepicker = new Datepicker(datepickerElement, options);
     const datepickerInput = document.querySelector('.datepicker');

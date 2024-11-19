@@ -10,6 +10,10 @@ import { Component } from '@angular/core';
 export class TrainStationComponent {
   public currentTrainStation: string = "Mageburg Hbf";
 
+  /**
+   * Changes the current train station based on the value entered in the search input field.
+   * If the input is empty or starts with a space, the function will not update the current train station.
+   */
   changeTrainStation(): void {
     const searchInput = document.getElementById('searchStation') as HTMLInputElement;
     if (searchInput.value === '' || searchInput.value.startsWith(' ')) {
