@@ -2,7 +2,7 @@ import {Component, HostListener} from '@angular/core';
 import {NgClass, NgOptimizedImage} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {PageItemComponent} from "../util/page-item/page-item.component";
-import {SidebarMobileService} from "../services/sidebar-mobile.service";
+import {SidebarMobileService} from "../services/sidebar-mobile/sidebar-mobile.service";
 
 @Component({
   selector: 'app-sidebar',

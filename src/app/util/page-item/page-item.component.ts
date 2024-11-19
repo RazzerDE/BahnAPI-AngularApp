@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {NgClass} from "@angular/common";
-import {SidebarMobileService} from "../../services/sidebar-mobile.service";
+import {SidebarMobileService} from "../../services/sidebar-mobile/sidebar-mobile.service";
 
 @Component({
   selector: 'sidebar-page-item',

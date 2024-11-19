@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SidebarComponent } from './sidebar.component';
 import {ActivatedRoute} from "@angular/router";
-import {SidebarMobileService} from "../services/sidebar-mobile.service";
+import {SidebarMobileService} from "../services/sidebar-mobile/sidebar-mobile.service";
 
 describe('SidebarComponent', () => {
   let component: SidebarComponent;
