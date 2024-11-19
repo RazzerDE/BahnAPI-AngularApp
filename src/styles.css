@@ -7,3 +7,28 @@ body * {
   /* add animation to switch page theme */
   @apply transition-colors duration-200;
 }
+
+.input-box {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  border-color: #e2e8f0;
+  border-width: 1px;
+  border-radius: .25rem;
+  padding: .5rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.cp-0\.5 {
+  padding: .5rem .75rem;
+}
+
+.ml-7\.5 {
+  margin-left: 1.9rem;
+}
+
+.ml-0\.4 {
+  margin-left: 0.09rem;
+}

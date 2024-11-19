@@ -33,8 +33,6 @@
 › `BahnAPI-AngularApp` provides a set of fundamental features that can assist you in handling APIs in typescript, thereby facilitating your learning process on how to manage them effectively. In our small project we used the **[BahnAPI](https://developers.deutschebahn.com/db-api-marketplace/apis/frontpage)** as example.
 <br />
 
-📢 › This project is designed to be <strong>compatible down to PHP 5.6</strong> and has been tested on both <strong>XAMPP</strong> and <strong>IntelliJ’s built-in web server</strong>.<br /><br />
-
 It supports following <strong>features</strong>:
 <ul>
   <li>📱 <strong>Responsive Website-Design</strong>: Our website is designed to be responsive on all devices.</li>
@@ -53,4 +51,6 @@ It supports following <strong>features</strong>:
 Then, follow these steps to ensure everything runs smoothly:
 1. Create an application on the DB API Marketplace & add the plans above to it.
 2. Set your <strong>correct API login credentials</strong> in `.env`
-3. Start the Webserver and have FUN!
+3. Run `npm install` to install all dependencies.
+4. Run `ng build` to build the project.
+5. Visit the page and have FUN!
