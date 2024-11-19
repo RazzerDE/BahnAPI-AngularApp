@@ -19,7 +19,6 @@ export class StartMainComponent {
   trainStationForm: FormControl<any> = new FormControl('', Validators.required);
 
   protected currentDate: string = 'Datum festlegen';
-  protected selectedDate: Date | null = null;
   protected invalidTrainstation: boolean = false
   protected showRoutePlaning: boolean = false;
   protected pickedDate: string;
@@ -73,6 +72,10 @@ export class StartMainComponent {
     }
   }
 
+  /**
+   * Toggles the visibility of the route planning section.
+   * When called, it switches the `showRoutePlaning` flag between true and false.
+   */
   toggleRoutePlaning(): void {
     this.showRoutePlaning = !this.showRoutePlaning;
   }
