@@ -27,7 +27,9 @@
 <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
   <!-- First Line (Input & Button) -->
   <div class="flex justify-between gap-x-6">
-    <div class="relative text-gray-500 focus-within:text-red-600 dark:focus-within:text-red-400 w-full">
+    <div class="relative text-gray-500 focus-within:text-red-600 dark:focus-within:text-red-400 w-full
+                transition-all duration-300 ease-out translate-x-0"
+         [class.active]="showRoutePlaning">
       <input [formControl]="trainStationForm" class="block w-full !pl-9 mt-1 text-sm text-black dark:text-gray-300
                                                     dark:border-gray-600 dark:bg-gray-700 focus:border-red-400
                                                     focus:outline-none focus:shadow-outline-red input-box
@@ -35,27 +37,44 @@
              placeholder="Name des Bahnhofs.." required
              [ngClass]="trainStationForm.invalid && invalidTrainstation ? '!border-red-600 dark:border-red-600' : ''">
       <div class="absolute inset-y-0 flex items-center ml-2 pointer-events-none">
-        <svg class="w-5 h-5 mt-1" aria-hidden="true" fill="#6b7280" xmlns="http://www.w3.org/2000/svg"
+        <svg class="w-5 h-5" aria-hidden="true" fill="#6b7280" xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
           <path d="M12 13V21M12 13C14.7614 13 17 10.7614 17 8C17 5.23858 14.7614 3 12 3C9.23858 3 7 5.23858 7 8C7 10.7614 9.23858 13 12 13Z"/>
         </svg>
       </div>
     </div>
-    <div>
-      <button type="submit" (click)="getTrainstationData()"
-              class="flex items-center justify-between px-4 py-2 text-sm font-medium text-white transition-colors
-        duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700
-        focus:outline-none focus:shadow-outline-red cp-0.5 h-full mt-0.5">
-        <svg class="w-4 h-4 mr-2 -ml-1" fill="none" stroke="#FFFFFF" aria-hidden="true" viewBox="0 0 488.4 488.4"
-              xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round" stroke-width="25">
+    <div class="relative text-gray-500 focus-within:text-red-600 dark:focus-within:text-red-400 slide-in
+                transition-all duration-300 ease-out translate-x-0 max-w-2xl" [class.hidden]="!showRoutePlaning">
+      <input class="block !pl-9 mt-1 text-sm text-black dark:text-gray-300
+    dark:border-gray-600 dark:bg-gray-700 focus:border-red-400 focus:outline-none focus:shadow-outline-red
+    input-box dark:focus:shadow-outline-gray w-full" placeholder="Endhaltestelle festlegen.." />
+      <div class="absolute inset-y-0 flex items-center ml-2 pointer-events-none">
+        <svg class="w-5 h-5" aria-hidden="true" fill="#6b7280" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 297 297" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+          <path d="M148.5,0C87.43,0,37.747,49.703,37.747,110.797c0,91.026,99.729,179.905,103.976,183.645
+    c1.936,1.705,4.356,2.559,6.777,2.559c2.421,0,4.841-0.853,6.778-2.559c4.245-3.739,103.975-92.618,103.975-183.645
+    C259.253,49.703,209.57,0,148.5,0z M148.5,272.689c-22.049-21.366-90.243-93.029-90.243-161.892
+    c0-49.784,40.483-90.287,90.243-90.287s90.243,40.503,90.243,90.287C238.743,179.659,170.549,251.322,148.5,272.689z"/>
+          <path d="M148.5,59.183c-28.273,0-51.274,23.154-51.274,51.614c0,28.461,23.001,51.614,51.274,51.614
+    c28.273,0,51.274-23.153,51.274-51.614C199.774,82.337,176.773,59.183,148.5,59.183z M148.5,141.901
+    c-16.964,0-30.765-13.953-30.765-31.104c0-17.15,13.801-31.104,30.765-31.104c16.964,0,30.765,13.953,30.765,31.104
+    C179.265,127.948,165.464,141.901,148.5,141.901z"/>
+        </svg>
+      </div>
+    </div>
+    <button type="submit" (click)="getTrainstationData()"
+            class="flex items-center justify-between px-4 py-2 text-sm font-medium text-white transition-colors
+      duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700
+      focus:outline-none focus:shadow-outline-red cp-0.5 h-12 mt-0.5">
+      <svg class="w-4 h-4 mr-2 -ml-1" fill="none" stroke="#FFFFFF" aria-hidden="true" viewBox="0 0 488.4 488.4"
+           xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round" stroke-width="25">
         <path d="M0,203.25c0,112.1,91.2,203.2,203.2,203.2c51.6,0,98.8-19.4,134.7-51.2l129.5,129.5c2.4,2.4,5.5,3.6,8.7,3.6
 s6.3-1.2,8.7-3.6c4.8-4.8,4.8-12.5,0-17.3l-129.6-129.5c31.8-35.9,51.2-83,51.2-134.7c0-112.1-91.2-203.2-203.2-203.2
 S0,91.15,0,203.25z M381.9,203.25c0,98.5-80.2,178.7-178.7,178.7s-178.7-80.2-178.7-178.7s80.2-178.7,178.7-178.7
 S381.9,104.65,381.9,203.25z"/>
-        </svg>
-        <span>Suchen</span>
-      </button>
-    </div>
+      </svg>
+      <span>Suchen</span>
+    </button>
   </div>
 
   <!-- Second Line (Date & Route Setting) -->
@@ -64,7 +83,7 @@ S381.9,104.65,381.9,203.25z"/>
       <!-- Date Picker -->
       <div class="relative">
         <button class="flex w-auto flex-col text-gray-600 dark:text-gray-400 -ml-2 hover:bg-gray-700 hover:dark:bg-white
-                     hover:dark:bg-opacity-5 hover:bg-opacity-5 rounded-lg pl-2" (click)="openDatepicker();">
+                     hover:dark:bg-opacity-5 hover:bg-opacity-5 rounded-lg pl-2" (click)="openDatepicker()">
           <div class="flex">
             <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="#6b7280" aria-hidden="true" viewBox="0 0 24 24"
                  xmlns="http://www.w3.org/2000/svg" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -90,7 +109,7 @@ S381.9,104.65,381.9,203.25z"/>
 
       <!-- Route Planner -->
       <button class="flex w-56 flex-col text-gray-600 dark:text-gray-400 -ml-2 hover:bg-gray-700 hover:dark:bg-white
-               hover:dark:bg-opacity-5 hover:bg-opacity-5 rounded-lg pl-2">
+               hover:dark:bg-opacity-5 hover:bg-opacity-5 rounded-lg pl-2" (click)="toggleRoutePlaning()">
         <div class="flex flex-col min-w-0">
           <div class="flex items-center">
             <svg class="flex-shrink-0 w-5 h-5 mr-2 mt-0.5" viewBox="0 0 297 297" fill="#6b7280" xmlns="http://www.w3.org/2000/svg"
@@ -114,7 +133,9 @@ S381.9,104.65,381.9,203.25z"/>
               </svg>
             </div>
           </div>
-          <span class="pl-7 ml-0.4 w-52-3">Endhaltestelle hinzufügen</span>
+          <span class="pl-7 ml-0.4" [ngClass]="showRoutePlaning ? 'w-51-6' : 'w-52-3'">
+            Endhaltestelle {{ !showRoutePlaning ? 'hinzufügen' : 'entfernen' }}
+          </span>
         </div>
       </button>
 

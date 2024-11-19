@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
+import {Component} from '@angular/core';
 import {RouterLink} from "@angular/router";
 import {NgClass} from "@angular/common";
 import {FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -21,6 +21,7 @@ export class StartMainComponent {
   protected currentDate: string = 'Datum festlegen';
   protected selectedDate: Date | null = null;
   protected invalidTrainstation: boolean = false
+  protected showRoutePlaning: boolean = false;
   protected pickedDate: string;
   private datepicker: Datepicker | undefined;
 
@@ -72,14 +73,16 @@ export class StartMainComponent {
     }
   }
 
+  toggleRoutePlaning(): void {
+    this.showRoutePlaning = !this.showRoutePlaning;
+  }
+
   setTrainStationDate(): void {
-    console.log(this.datepicker)
     if (!this.datepicker) { return; }
     if (!this.datepicker.getDate()) { return; }
 
     const date = new Date(this.datepicker.getDate() as string);
     this.currentDate = date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
-
     this.pickedDate = date.toLocaleDateString('en-US');
   }
 
