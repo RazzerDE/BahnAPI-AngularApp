@@ -4,7 +4,7 @@ import {NgClass} from "@angular/common";
 import {FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Datepicker, DatepickerOptions} from "flowbite";
 import {TableComponent} from "../../util/table/table.component";
-import {ApiService} from "../../services/api-service/api-service.service";
+import {ApiService} from "../../services/api-service/api.service";
 
 @Component({
   selector: 'app-start-main',
@@ -27,10 +27,10 @@ export class StartMainComponent {
   protected pickedDate: string;
   private datepicker: Datepicker | undefined;
 
-  public tableHeader: string[] = ['Uhrzeit', 'Zugname','Zugart', 'Herkunftsbahnhof', 'Zielbahnhof', 'Gleis', 'Fahrstuhl vorhanden'];
-  public tableData: string[][] = [
-    ['08:00', 'ICE 123', 'ICE', 'Berlin Hbf', 'München Hbf', '5', 'Ja'],
-    ['09:30', 'RE 456', 'Regional', 'Hamburg Hbf', 'Köln Hbf', '3', 'Nein']
+  protected tableHeader: string[] = ['Uhrzeit', 'Zugname', 'Zugart', 'Herkunftsbahnhof', 'Wunschbahnhof', 'Gleis', 'Besitzer'];
+  protected tableData: string[][] = [
+    ['08:00', 'ICE 123', 'ICE', 'Berlin Hbf', 'München Hbf', '5', 'Deutsche Bahn'],
+    ['09:30', 'RE 456', 'Regional', 'Hamburg Hbf', 'Köln Hbf', '3', 'Apollo']
   ];
 
   constructor(private api: ApiService) {
