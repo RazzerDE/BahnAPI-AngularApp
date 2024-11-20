@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {from, map, mergeMap, Observable} from "rxjs";
 import {environment} from "./types/environment";
 import {Station, Stations} from "./types/stations";
 import {Parser} from "xml2js";
 import {Schedule, Timetable} from "./types/timetables";
+import {StationData, StationDataResponse} from "./types/station-data";
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +17,11 @@ export class ApiService {
 
   private ENDPOINT_TIMETABLES: string = "timetables/v1/";
   private ENDPOINT_STATIONS: string = "station-data/v2/";
-  private ENDPOINT_FASTA: string = "fasta/v2/";
+  // private ENDPOINT_FASTA: string = "fasta/v2/";
 
   current_station: Station | undefined;
   station_stops: Schedule[] = [];
+  stations: StationData[] = [];
 
   // using the xml2js parser to convert the XML response to JSON
   private headers: HttpHeaders = new HttpHeaders({
@@ -54,13 +56,13 @@ export class ApiService {
 
 
   /**
-   * Fetches timetables for a given station, date, and hour.
+   * Fetches timetables for a given station, date, and hour and saves the data in a global variable.
    *
    * @param station_name - The name of the train station.
    * @param date - The date in the format YYMMDD (example: 241120).
    * @param hour - The hour in the format HH (example: 21).
    */
-  fetchTimetables(station_name: string, date?: string, hour?: string): void {
+  getTimetableData(station_name: string, date?: string, hour?: string): void {
     this.fetchStation(station_name).subscribe({
       next: (data: Stations): void => {
         this.current_station = data.station;
@@ -82,17 +84,50 @@ export class ApiService {
     });
   }
 
+  /**
+   * Fetches data from stations with an optional limit and federal state filter.
+   *
+   * @param limit - The maximum number of stations to fetch. Defaults to 10 if not provided.
+   * @param federalstate - The federal state to filter the stations by. Defaults to 'sachsen-anhalt' if not provided.
+   */
+  getDataFromStations(limit?: number, federalstate?: string): void {
+    this.fetchStations(limit || 15, federalstate || 'sachsen-anhalt').subscribe({
+      next: (data: StationDataResponse): void => {
+        this.stations = data.result;
+        console.log(this.stations[2].number)
+      }, error: (error): void => {
+        console.error(error);
+      }
+    });
+  }
+
+  /**
+   * Fetches data for a specific station by its name.
+   *
+   * @param station_name - The name of the station to fetch data for.
+   */
+  getDataByStation(station_name: string): void {
+    this.fetchStations(5, null, station_name).subscribe({
+      next: (data: StationDataResponse): void => {
+        this.stations = data.result;
+      }, error: (error): void => {
+        console.error(error);
+      }
+    });
+  }
+
 
   //                                HTTP REQUESTS
 
 
-  // fetchStations(): Observable<any> {
-  //   return this.http.get(`${(this.API_URL + this.ENDPOINT_TIMETABLES + `stations`,
-  //     {responseType: 'text', headers: this.headers})
-  //     .pipe(mergeMap(xmlResponse => from(this.xmlToJson(xmlResponse))),
-  //       map(response => response.__zone_symbol__value || response)
-  //     );
-  // }
+  fetchStations(limit: number, federalstate: string | null, searched_string?: string): Observable<any> {
+    let params = new HttpParams().set('limit', limit.toString());
+    if (federalstate != null) { params = params.set('federalstate', federalstate); }
+    if (searched_string) { params = params.set('searchstring', searched_string); }
+
+    return this.http.get(this.API_URL + this.ENDPOINT_STATIONS + 'stations',
+      {responseType: 'json', headers: this.headers, params: params});
+  }
 
   fetchStation(station_name: string): Observable<any> {
     return this.http.get(`${(this.API_URL + this.ENDPOINT_TIMETABLES + `station/${station_name}`)}`,
