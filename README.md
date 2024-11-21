@@ -51,7 +51,7 @@ It supports following <strong>features</strong>:
 
 Then, follow these steps to ensure everything runs smoothly:
 1. Create an application on the DB API Marketplace & add the plans above to it.
-2. Set your <strong>correct API login credentials</strong> in `src/app/services/api-service/types/environment.ts`.
+2. Set your <strong>correct API login credentials</strong> in [`src/app/services/api-service/types/environment.ts`](https://github.com/RazzerDE/BahnAPI-AngularApp/blob/main/src/app/services/api-service/types/environment.ts).
 3. Run `npm install` to install all dependencies.
 4. Run `ng build` to build the project.
 5. Visit the page and have FUN!
