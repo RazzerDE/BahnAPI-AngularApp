@@ -17,6 +17,8 @@ export class TrainStationComponent {
   public tableHeaders: string[] = ['Station', 'WLAN', 'Parkplatz', 'barrierefrei', 'Fahrstuhl', 'Adresse']
   public tableData: string[][] = [];
 
+  private isTableRefreshActive: boolean = false;
+
   constructor(protected apiService: ApiService) {
     if (this.apiService.stations.length === 0) {
       console.log("empty; api call");
@@ -37,11 +39,20 @@ export class TrainStationComponent {
    */
   changeTrainStation(): void {
     const searchInput = document.getElementById('searchStation') as HTMLInputElement;
+    const error_box: HTMLSpanElement = document.getElementById('error_trainstation') as HTMLSpanElement;
+    if (error_box && !error_box.classList.contains('hidden')) {
+      error_box.classList.add('hidden');
+    }
+
     if (searchInput.value === '' || searchInput.value.startsWith(' ')) {
-      return;
+      this.apiService.getDataFromStations();
+    } else {
+      this.apiService.getDataByStation(searchInput.value);
     }
 
     // update listed trainstation
+    this.currentTrainStation = 'Lädt..';
+    setTimeout(() => {this.mapStationsToTableData(); }, 1000);
   }
 
   /**
@@ -56,7 +67,9 @@ export class TrainStationComponent {
     }
 
     // update the table every 5s
-    setInterval(() => { this.mapStationsToTableData(); }, 5000);
+    if (!this.isTableRefreshActive) {
+      setInterval(() => { this.mapStationsToTableData(); }, 5000);
+    }
   }
 
   /**
@@ -65,7 +78,12 @@ export class TrainStationComponent {
    * The table data is then sorted alphabetically by station name.
    */
   private mapStationsToTableData(): void {
-    console.log(this.apiService.stations);
+    if (this.apiService.stations.length === 1) {
+      this.currentTrainStation = this.apiService.stations[0].name;
+    } else {
+      this.currentTrainStation = "";
+    }
+
     this.tableData = this.apiService.stations.map((station: StationData) => [
       station.name,
       station.hasWiFi ? '✔' : '❌',

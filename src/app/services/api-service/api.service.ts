@@ -136,7 +136,20 @@ export class ApiService {
     this.fetchStations(5, null, station_name).subscribe({
       next: (data: StationDataResponse): void => {
         this.stations = data.result;
+        localStorage.setItem('stations', JSON.stringify(this.stations));
       }, error: (error): void => {
+        // station not found
+        if (error.status == 404) {
+          const error_box: HTMLSpanElement = document.getElementById('error_trainstation') as HTMLSpanElement;
+          if (error_box && error_box.classList.contains('hidden')) {
+            error_box.classList.remove('hidden');
+          }
+
+          this.stations = [];
+          localStorage.setItem('stations', JSON.stringify(this.stations));
+          return;
+        }
+
         console.error(error);
       }
     });

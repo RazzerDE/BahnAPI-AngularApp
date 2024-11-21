@@ -15,10 +15,13 @@
   <div class="grid grid-cols-2 gap-4 mt-11 mb-0 items-center">
 
     <!-- Current Train-Station indicator -->
-    <h3 class="text-lg font-semibold mb-2">Aktueller Bahnhof: <span class="text-red-700">{{apiService.current_station ? apiService.current_station.name : ''}}</span></h3>
+    <h3 class="text-lg font-semibold mb-2">Aktueller Bahnhof: <span class="text-red-700">{{currentTrainStation}}</span></h3>
 
     <!-- Searchbar -->
     <div class="flex justify-center flex-1 justify-self-end h-10 mb-2">
+      <div class="relative self-center mr-5 hidden" id="error_trainstation">
+        <span class="text-red-700">Kein Bahnhof gefunden.</span>
+      </div>
       <div class="relative focus-within:text-red-500">
         <div class="absolute inset-y-0 flex items-center pl-2">
 
