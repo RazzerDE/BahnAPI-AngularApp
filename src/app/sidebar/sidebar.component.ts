@@ -3,6 +3,7 @@ import {NgClass, NgOptimizedImage} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {PageItemComponent} from "../util/page-item/page-item.component";
 import {SidebarMobileService} from "../services/sidebar-mobile/sidebar-mobile.service";
+import {ApiService} from "../services/api-service/api.service";
 
 @Component({
   selector: 'app-sidebar',
@@ -17,7 +18,14 @@ import {SidebarMobileService} from "../services/sidebar-mobile/sidebar-mobile.se
   styleUrl: './sidebar.component.css'
 })
 export class SidebarComponent {
-  constructor(protected sidebarService: SidebarMobileService) {}
+  constructor(protected sidebarService: SidebarMobileService, private apiService: ApiService) {}
+
+  protected clearCache(): void {
+    this.apiService.stations = [];
+    this.apiService.elevators = [];
+    this.apiService.current_station = undefined;
+    localStorage.clear();
+  }
 
   /**
    * Listens for the 'Escape' key press event and closes the mobile menu if it is open.

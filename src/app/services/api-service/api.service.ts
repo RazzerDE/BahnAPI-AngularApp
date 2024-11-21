@@ -6,6 +6,7 @@ import {Station, Stations} from "./types/stations";
 import {Parser} from "xml2js";
 import {Schedule, Timetable} from "./types/timetables";
 import {StationData, StationDataResponse} from "./types/station-data";
+import {Elevator} from "./types/elevators";
 
 @Injectable({
   providedIn: 'root'
@@ -17,11 +18,12 @@ export class ApiService {
 
   private ENDPOINT_TIMETABLES: string = "timetables/v1/";
   private ENDPOINT_STATIONS: string = "station-data/v2/";
-  // private ENDPOINT_FASTA: string = "fasta/v2/";
+  private ENDPOINT_FASTA: string = "fasta/v2/";
 
   current_station: Station | undefined;
   station_stops: Schedule[] = [];
   stations: StationData[] = [];
+  elevators: Elevator[] = [];
 
   // using the xml2js parser to convert the XML response to JSON
   private headers: HttpHeaders = new HttpHeaders({
@@ -31,7 +33,9 @@ export class ApiService {
   });
   private parser: Parser = new Parser({explicitArray: false, trim: true, explicitRoot: false, mergeAttrs: true});
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.updateCache();
+  }
 
   /**
    * Converts an XML string to a JSON object - is used to parse the XML response from the API.
@@ -51,6 +55,27 @@ export class ApiService {
     });
   }
 
+  /**
+   * Updates the cache by retrieving stored data from localStorage.
+   * If data is found, it updates the corresponding properties in the service.
+   */
+  private updateCache(): void {
+    const temp_stations: string | null = localStorage.getItem('stations');
+    const temp_elevators: string | null = localStorage.getItem('elevators');
+    const temp_current_station: string | null = localStorage.getItem('current_station');
+    if (temp_stations && temp_stations.length > 0) {
+      this.stations = JSON.parse(localStorage.getItem('stations') || '');
+    }
+
+    if (temp_elevators && temp_elevators.length > 0) {
+      this.elevators = JSON.parse(localStorage.getItem('elevators') || '');
+    }
+
+    if (temp_current_station) {
+      this.current_station = JSON.parse(localStorage.getItem('current_station') || '');
+    }
+  }
+
 
   //                                GET DATA FUNCTIONS
 
@@ -66,6 +91,7 @@ export class ApiService {
     this.fetchStation(station_name).subscribe({
       next: (data: Stations): void => {
         this.current_station = data.station;
+        localStorage.setItem('current_station', JSON.stringify(this.current_station));
 
         // set default values for date and hour if they are not provided
         date = date || new Date().toISOString().slice(2, 10).replace(/-/g, '');
@@ -91,10 +117,10 @@ export class ApiService {
    * @param federalstate - The federal state to filter the stations by. Defaults to 'sachsen-anhalt' if not provided.
    */
   getDataFromStations(limit?: number, federalstate?: string): void {
-    this.fetchStations(limit || 15, federalstate || 'sachsen-anhalt').subscribe({
+    this.fetchStations(limit || 12, federalstate || 'sachsen-anhalt').subscribe({
       next: (data: StationDataResponse): void => {
         this.stations = data.result;
-        console.log(this.stations[2].number)
+        localStorage.setItem('stations', JSON.stringify(this.stations));
       }, error: (error): void => {
         console.error(error);
       }
@@ -116,6 +142,18 @@ export class ApiService {
     });
   }
 
+  checkStationsForElevator(): void {
+    this.fetchFacilities().subscribe({
+      next: (data: Elevator[]): void => {
+        this.elevators = data;
+        localStorage.setItem('elevators', JSON.stringify(this.elevators));
+      },
+      error: (error): void => {
+        console.error(error);
+      }
+    });
+  }
+
 
   //                                HTTP REQUESTS
 
@@ -126,6 +164,14 @@ export class ApiService {
     if (searched_string) { params = params.set('searchstring', searched_string); }
 
     return this.http.get(this.API_URL + this.ENDPOINT_STATIONS + 'stations',
+      {responseType: 'json', headers: this.headers, params: params});
+  }
+
+  fetchFacilities(): Observable<any> {
+    let params = new HttpParams().set('type', 'ELEVATOR');
+    params = params.set('state', 'ACTIVE');
+
+    return this.http.get(`${(this.API_URL + this.ENDPOINT_FASTA + `facilities`)}`,
       {responseType: 'json', headers: this.headers, params: params});
   }
 

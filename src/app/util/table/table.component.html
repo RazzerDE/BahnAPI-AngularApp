@@ -1,25 +1,29 @@
 <div class="overflow-x-auto rounded-lg shadow-xl">
   <!-- Table -->
-  <table class="w-full whitespace-no-wrap mt-0 table-fixed">
-
-    <!-- Table-headers -->
-    <thead>
-      <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700
-               bg-gray-200/50 dark:text-gray-400 dark:bg-gray-800/40">
+  <div class="relative">
+    <table class="w-full whitespace-no-wrap mt-0 table-fixed">
+      <!-- Table-headers -->
+      <thead class="sticky top-0 z-10 bg-gray-200/50 dark:bg-gray-800/40">
+      <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 dark:text-gray-400">
         @for (column of columns; track columns) {
-            <th class="px-4 py-3">{{ column }}</th>
-          }
+          <th class="px-4 py-3">{{ column }}</th>
+        }
       </tr>
-    </thead>
-    <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800 overflow-y-auto">
-    <!-- Table-rows -->
-      @for (row of rows; track $index) {
-        <tr class="text-gray-700 dark:text-gray-400 hover:bg-gray-700/30">
-          @for (cell of row; track $index) {
-            <td class="px-4 py-3">{{ cell }}</td>
+      </thead>
+    </table>
+    <div class="overflow-y-auto max-h-30vh sm:max-h-40vh lg:max-h-60vh">
+      <table class="w-full whitespace-no-wrap mt-0 table-fixed">
+        <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+        <!-- Table-rows -->
+          @for (row of rows; track $index) {
+            <tr class="text-gray-700 dark:text-gray-400 hover:bg-gray-700/30">
+              @for (cell of row; track $index) {
+                <td class="px-6 py-3">{{ cell }}</td>
+              }
+            </tr>
           }
-        </tr>
-      }
-    </tbody>
-  </table>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
