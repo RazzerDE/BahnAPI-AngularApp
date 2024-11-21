@@ -20,13 +20,13 @@ export class TrainStationComponent {
   private isTableRefreshActive: boolean = false;
 
   constructor(protected apiService: ApiService) {
+    this.apiService.isLoading = true;
+
     if (this.apiService.stations.length === 0) {
-      console.log("empty; api call");
       this.apiService.getDataFromStations();
     }
 
     if (this.apiService.elevators.length === 0) {
-      console.log("empty");
       this.apiService.checkStationsForElevator();
     }
 
@@ -46,12 +46,21 @@ export class TrainStationComponent {
 
     if (searchInput.value === '' || searchInput.value.startsWith(' ')) {
       this.apiService.getDataFromStations();
-    } else {
-      this.apiService.getDataByStation(searchInput.value);
+    } else { // check if station is already cached
+      const searchValue = searchInput.value.toLowerCase();
+      const cachedStation = this.apiService.stations.find(station => station.name.toLowerCase() === searchValue);
+
+      if (cachedStation) {
+        this.apiService.stations = [cachedStation];
+        this.mapStationsToTableData();
+      } else {
+        this.apiService.getDataByStation(searchValue);
+      }
     }
 
     // update listed trainstation
     this.currentTrainStation = 'Lädt..';
+    this.apiService.isLoading = true;
     setTimeout(() => {this.mapStationsToTableData(); }, 1000);
   }
 
@@ -61,6 +70,7 @@ export class TrainStationComponent {
    */
   generateStationsTable(): void {
     if (this.apiService.stations.length === 0) { // make API call to get station data
+      this.apiService.isLoading = true;
       setTimeout(() => {this.mapStationsToTableData(); }, 2000);
     } else { // already cached
       this.mapStationsToTableData();
@@ -84,15 +94,17 @@ export class TrainStationComponent {
       this.currentTrainStation = "";
     }
 
-    this.tableData = this.apiService.stations.map((station: StationData) => [
-      station.name,
-      station.hasWiFi ? '✔' : '❌',
-      station.hasParking ? '✔' : '❌',
-      station.hasSteplessAccess ? '✔' : '❌',
-      this.apiService.elevators.some(elevator => elevator.stationnumber === station.number) ? '✔' : '❌',
-      station.mailingAddress.street + ', ' + station.mailingAddress.city
-    ]).sort((a, b) => a[0].localeCompare(b[0]));
-
-
+    this.apiService.isLoading = false;
+    this.tableData = this.apiService.stations.map((station: StationData): string[] => {
+      const hasElevator: boolean = this.apiService.elevators.some(elevator => elevator.stationnumber === station.number);
+      return [
+        station.name,
+        station.hasWiFi ? '✔' : '❌',
+        station.hasParking ? '✔' : '❌',
+        station.hasSteplessAccess ? '✔' : '❌',
+        hasElevator ? '✔' : '❌',
+        `${station.mailingAddress.street}, ${station.mailingAddress.city}`
+      ];
+    }).sort((a, b) => a[0].localeCompare(b[0]));
   }
 }

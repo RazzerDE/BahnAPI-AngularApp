@@ -35,8 +35,9 @@
 
 It supports following <strong>features</strong>:
 <ul>
-  <li>📺 <strong>Responsive Website-Design</strong>: Our website is designed to be responsive on all devices.</li>
   <li>📚 <strong>Simple Caching-System</strong>: Don't make new API requests on page refresh.</li>
+  <li>📡 <strong>Data Loader GIF</strong>: While the table data is loading, a endless GIF will be shown.</li>
+  <li>📺 <strong>Responsive Website-Design</strong>: Our website is designed to be responsive on all devices.</li>
   <li>⚡ <strong>Optimized Tailwind-CSS</strong>: We used Tailwind-CSS to reduce the amount of loaded CSS and to keep things responsive.</li>
 </ul>
 

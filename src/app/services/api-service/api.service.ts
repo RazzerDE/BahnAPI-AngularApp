@@ -24,6 +24,7 @@ export class ApiService {
   station_stops: Schedule[] = [];
   stations: StationData[] = [];
   elevators: Elevator[] = [];
+  isLoading: boolean = false;
 
   // using the xml2js parser to convert the XML response to JSON
   private headers: HttpHeaders = new HttpHeaders({
@@ -155,6 +156,12 @@ export class ApiService {
     });
   }
 
+  /**
+   * Checks the stations for elevator facilities.
+   * Sets the `isLoading` flag to true while the data is being fetched.
+   * On successful data retrieval, updates the `elevators` array and stores the data in localStorage.
+   * If an error occurs during the data fetch, logs the error to the console.
+   */
   checkStationsForElevator(): void {
     this.fetchFacilities().subscribe({
       next: (data: Elevator[]): void => {

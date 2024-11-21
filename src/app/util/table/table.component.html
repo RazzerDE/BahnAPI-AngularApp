@@ -14,7 +14,18 @@
     <div class="overflow-y-auto max-h-30vh sm:max-h-40vh lg:max-h-60vh">
       <table class="w-full whitespace-no-wrap mt-0 table-fixed">
         <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-        <!-- Table-rows -->
+        <!-- Loader GIF -->
+          @if (this.apiService.isLoading) {
+            <tr>
+              <td [attr.colspan]="columns.length" class="text-center py-5">
+                <div class="flex flex-col items-center justify-center">
+                  <img ngSrc="assets/img/page-load.gif" alt="Loading..." height="200" width="200" class="h-24 w-24">
+                  <span>Lädt..</span>
+                </div>
+              </td>
+            </tr>
+        } @else {
+          <!-- Table-rows -->
           @for (row of rows; track $index) {
             <tr class="text-gray-700 dark:text-gray-400 hover:bg-gray-700/30">
               @for (cell of row; track $index) {
@@ -23,6 +34,8 @@
               }
             </tr>
           }
+        }
+
         </tbody>
       </table>
     </div>
