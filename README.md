@@ -2,12 +2,12 @@
      📡 BahnAPI-AngularApp ~ Learn to work with APIs
 </h1>
 
-<!--<p align="center">
-  <i align="center">This project involves a user-friendly website to display tables from a MySQL database.<br />Developed using HTML-Stack with PHP.</i>
+<p align="center">
+  <i align="center">Learn to work with API-REST Services in Typescript.<br />Developed using Angular with an HTML-Stack.</i>
 
-  ![image](https://github.com/RazzerDE/PHP-MySQL-WebApp/assets/49283907/192d06e0-7c20-4b35-9a04-eb74d6a0df78)
+  ![image](https://i.imgur.com/LZjXHEy.png)
 
-</p>-->
+</p>
 
 <h4 align="center">
   <a href="https://angular.dev/">
@@ -35,9 +35,9 @@
 
 It supports following <strong>features</strong>:
 <ul>
-  <li>📱 <strong>Responsive Website-Design</strong>: Our website is designed to be responsive on all devices.</li>
-  <li>🎨 <strong>Optimized Tailwind-CSS</strong>: We used Tailwind-CSS to reduce the amount of loaded CSS and to keep things responsive.</li>
-  <br />
+  <li>📺 <strong>Responsive Website-Design</strong>: Our website is designed to be responsive on all devices.</li>
+  <li>📚 <strong>Simple Caching-System</strong>: Don't make new API requests on page refresh.</li>
+  <li>⚡ <strong>Optimized Tailwind-CSS</strong>: We used Tailwind-CSS to reduce the amount of loaded CSS and to keep things responsive.</li>
 </ul>
 
 ## 🔨 Installation
@@ -50,7 +50,7 @@ It supports following <strong>features</strong>:
 
 Then, follow these steps to ensure everything runs smoothly:
 1. Create an application on the DB API Marketplace & add the plans above to it.
-2. Set your <strong>correct API login credentials</strong> in `.env`
+2. Set your <strong>correct API login credentials</strong> in `src/app/services/api-service/types/environment.ts`.
 3. Run `npm install` to install all dependencies.
 4. Run `ng build` to build the project.
 5. Visit the page and have FUN!
