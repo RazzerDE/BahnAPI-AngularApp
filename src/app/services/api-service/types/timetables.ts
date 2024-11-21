@@ -23,12 +23,12 @@ export interface Arrival {
   pp: string; // Planned plattform
   l: string; // Line. The line indicator (e.g. "3" for an S-Bahn or "45S" for a bus).
   tra?: string; // Transition. Trip id of the next or previous train of a shared train.
-  ppth: string; // Planned Path. A sequence of station names separated by the pipe symbols ('|'). The first element is the trip's start station.
+  ppth: string; // Planned Path. A sequence of station names separated by the pipe symbols ('|'). The first element is the trip's start station. The current station is never included.
 }
 
 export interface Departure {
   pt: string; // Planned departure or arrival time. 'YYMMddHHmm' format, e.g. '1404011437' for 14:37 on April the 1st of 2014.
   pp: string; // Planned plattform
   l: string; // Line. The line indicator (e.g. "3" for an S-Bahn or "45S" for a bus).
-  ppth: string; // Planned Path. A sequence of station names separated by the pipe symbols ('|'). The first element is the trip's start station.
+  ppth: string; // Planned Path. A sequence of station names separated by the pipe symbols ('|'). The first element is the trip's start station. The current station is never included.
 }

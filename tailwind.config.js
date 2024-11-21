@@ -11,6 +11,9 @@ module.exports = {
         '60vh': '60vh',
         '30vh': '30vh',
         '40vh': '40vh',
+        '42vh': '42vh',
+        '22vh': '22vh',
+        '12vh': '12vh',
       },
     },
     colors: {

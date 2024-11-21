@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {TableComponent} from "../../util/table/table.component";
 import {ApiService} from "../../services/api-service/api.service";
 import {StationData} from "../../services/api-service/types/station-data";
+import {NavigationEnd, Router} from "@angular/router";
 
 @Component({
   selector: 'app-train-station',
@@ -12,14 +13,14 @@ import {StationData} from "../../services/api-service/types/station-data";
   templateUrl: './train-station.component.html',
   styleUrl: './train-station.component.css'
 })
-export class TrainStationComponent {
+export class TrainStationComponent implements OnInit{
   public currentTrainStation: string = "";
   public tableHeaders: string[] = ['Station', 'WLAN', 'Parkplatz', 'barrierefrei', 'Fahrstuhl', 'Adresse']
   public tableData: string[][] = [];
 
   private isTableRefreshActive: boolean = false;
 
-  constructor(protected apiService: ApiService) {
+  constructor(protected apiService: ApiService, private router: Router) {
     this.apiService.isLoading = true;
 
     if (this.apiService.stations.length === 0) {
@@ -31,6 +32,16 @@ export class TrainStationComponent {
     }
 
     this.generateStationsTable();
+  }
+
+  ngOnInit(): void {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        console.log('Page visited by redirect:', event.urlAfterRedirects);
+        // set loading to true after angular router navigation
+        this.apiService.isLoading = true;
+      }
+    });
   }
 
   /**
@@ -89,9 +100,11 @@ export class TrainStationComponent {
    */
   private mapStationsToTableData(): void {
     if (this.apiService.stations.length === 1) {
+      this.apiService.isEmptyResults = false;
       this.currentTrainStation = this.apiService.stations[0].name;
     } else {
       this.currentTrainStation = "";
+      this.apiService.isEmptyResults = true;
     }
 
     this.apiService.isLoading = false;

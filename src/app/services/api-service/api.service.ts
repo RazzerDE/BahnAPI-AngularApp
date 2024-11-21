@@ -24,7 +24,9 @@ export class ApiService {
   station_stops: Schedule[] = [];
   stations: StationData[] = [];
   elevators: Elevator[] = [];
+
   isLoading: boolean = false;
+  isEmptyResults: boolean = false; // used to hide loading spinner when no results are found
   isInvalidKey: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false); // used to check if the API key is invalid
 
   // using the xml2js parser to convert the XML response to JSON

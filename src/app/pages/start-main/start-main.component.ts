@@ -1,10 +1,11 @@
-import {Component} from '@angular/core';
-import {RouterLink} from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {NavigationEnd, Router, RouterLink} from "@angular/router";
 import {NgClass} from "@angular/common";
 import {FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Datepicker, DatepickerOptions} from "flowbite";
 import {TableComponent} from "../../util/table/table.component";
 import {ApiService} from "../../services/api-service/api.service";
+import {Schedule} from "../../services/api-service/types/timetables";
 
 @Component({
   selector: 'app-start-main',
@@ -18,7 +19,7 @@ import {ApiService} from "../../services/api-service/api.service";
   templateUrl: './start-main.component.html',
   styleUrl: './start-main.component.css'
 })
-export class StartMainComponent {
+export class StartMainComponent implements OnInit {
   trainStationForm: FormControl<any> = new FormControl('', Validators.required);
 
   protected currentDate: string = 'Datum festlegen';
@@ -27,14 +28,33 @@ export class StartMainComponent {
   protected pickedDate: string;
   private datepicker: Datepicker | undefined;
 
-  protected tableHeader: string[] = ['Uhrzeit', 'Zugname', 'Zugart', 'Herkunftsbahnhof', 'Wunschbahnhof', 'Gleis', 'Besitzer'];
-  protected tableData: string[][] = [
-    ['08:00', 'ICE 123', 'ICE', 'Berlin Hbf', 'München Hbf', '5', 'Deutsche Bahn'],
-    ['09:30', 'RE 456', 'Regional', 'Hamburg Hbf', 'Köln Hbf', '3', 'Apollo']
-  ];
+  protected tableHeader: string[] = ['Uhrzeit', 'Zugname', 'Zugart', 'Herkunftsbahnhof', 'Wunschbahnhof', 'Gleis'];
+  protected tableData: string[][] = [];
 
-  constructor(private api: ApiService) {
-    this.pickedDate = new Date().toLocaleDateString('en-US');
+  private isTableRefreshActive: boolean = false;
+  private end_station_name: string = 'Magdeburg Hbf';
+  private start_station_name: string = '';
+
+  constructor(private apiService: ApiService, private router: Router) {
+    const temp_date = new Date();
+    this.pickedDate = temp_date.toLocaleDateString('en-US');
+
+    this.apiService.isLoading = true;
+    if (this.apiService.station_stops.length === 0) {
+      this.apiService.getTimetableData(this.end_station_name, temp_date.toISOString().slice(2, 10).replace(/-/g, ''),
+        temp_date.getHours().toString().padStart(2, '0'));
+    }
+
+    this.generateStationsTable();
+  }
+
+  ngOnInit(): void {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        // set loading to true after angular router navigation
+        this.apiService.isLoading = true;
+      }
+    });
   }
 
   /**
@@ -101,7 +121,6 @@ export class StartMainComponent {
   /**
    * Validates the train station form and toggles the invalidTrainstation flag.
    * If the form is invalid, sets the invalidTrainstation flag to true and returns.
-   * Otherwise, toggles the invalidTrainstation flag.
    */
   getTrainstationData(): void {
     if (this.trainStationForm.invalid) {
@@ -109,7 +128,42 @@ export class StartMainComponent {
       return;
     }
 
-    this.invalidTrainstation = !this.invalidTrainstation;
+  }
+
+  private generateStationsTable(): void {
+    if (this.apiService.station_stops.length === 0) { // make API call to get station data
+      this.apiService.isLoading = true;
+      setTimeout(() => {this.mapStationsToTableData(); }, 2000);
+    } else { // already cached
+      this.mapStationsToTableData();
+    }
+
+    // update the table every 5s
+    if (!this.isTableRefreshActive) {
+      // setInterval(() => { this.mapStationsToTableData(); }, 5000);
+    }
+  }
+
+  private mapStationsToTableData(): void {
+    this.apiService.isLoading = false;
+    this.tableData = this.apiService.station_stops
+      .filter((train: Schedule) => train.ar)
+      .map((train: Schedule): string[] => {
+        return [
+          this.formatTime(train.ar!.pt),
+          train.tl.c + ' ' + train.tl.n,
+          train.tl.c,
+          train.ar!.ppth.split('|')[0],
+          this.end_station_name,
+          train.ar!.pp
+        ];
+      }).sort((a, b) => a[0].localeCompare(b[0]));
+  }
+
+  private formatTime(pt: string): string {
+    const hours = pt.slice(6, 8);
+    const minutes = pt.slice(8, 10);
+    return `${hours}:${minutes}`;
   }
 
 

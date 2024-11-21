@@ -1,7 +1,7 @@
-<h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">Startseite</h2>
+<h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-2">Startseite</h2>
 
 <!-- Info Banner -->
-<a routerLink="/statistics" class="flex items-center justify-between p-4 mb-8 text-sm font-semibold text-red-100
+<a routerLink="/statistics" class="flex items-center justify-between p-4 mb-4 text-sm font-semibold text-red-100
                                    bg-red-600 rounded-lg shadow-md focus:outline-none focus:shadow-outline-purple">
   <div class="flex items-center">
     <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -145,5 +145,5 @@ S381.9,104.65,381.9,203.25z"/>
   </div>
 </div>
 
-<app-table [columns]=tableHeader [rows]=tableData></app-table>
+<app-table [columns]=tableHeader [rows]=tableData [small]="true"></app-table>
 

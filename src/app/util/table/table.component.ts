@@ -15,6 +15,7 @@ import {ApiService} from "../../services/api-service/api.service";
 export class TableComponent {
   @Input() columns: string[] = [];
   @Input() rows: string[][] = [];
+  @Input() small: boolean = false;
 
   @ViewChild('invalidAlert') alert_box!: ElementRef;
 
@@ -22,7 +23,7 @@ export class TableComponent {
     this.apiService.isInvalidKey.subscribe((_value: boolean) => {
       this.apiService.isLoading = false;
 
-      if (this.alert_box.nativeElement.classList.contains('hidden')) {
+      if (this.alert_box && this.alert_box.nativeElement.classList.contains('hidden')) {
         this.alert_box.nativeElement.classList.remove('hidden');
       }
 
