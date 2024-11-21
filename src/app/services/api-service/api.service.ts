@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {from, map, mergeMap, Observable} from "rxjs";
+import {BehaviorSubject, from, map, mergeMap, Observable} from "rxjs";
 import {environment} from "./types/environment";
 import {Station, Stations} from "./types/stations";
 import {Parser} from "xml2js";
@@ -25,6 +25,7 @@ export class ApiService {
   stations: StationData[] = [];
   elevators: Elevator[] = [];
   isLoading: boolean = false;
+  isInvalidKey: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false); // used to check if the API key is invalid
 
   // using the xml2js parser to convert the XML response to JSON
   private headers: HttpHeaders = new HttpHeaders({
@@ -123,6 +124,9 @@ export class ApiService {
         this.stations = data.result;
         localStorage.setItem('stations', JSON.stringify(this.stations));
       }, error: (error): void => {
+        if (error.status == 401) {
+          this.isInvalidKey.next(true);
+        }
         console.error(error);
       }
     });
@@ -149,6 +153,8 @@ export class ApiService {
           this.stations = [];
           localStorage.setItem('stations', JSON.stringify(this.stations));
           return;
+        } else if (error.status == 401) {
+          this.isInvalidKey.next(true);
         }
 
         console.error(error);
