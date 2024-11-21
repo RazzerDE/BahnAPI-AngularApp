@@ -6,7 +6,7 @@
   <!-- Description of the Page -->
     <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
       <p class="text-sm text-gray-600 dark:text-gray-400">
-        Diese Seite bietet eine detaillierte Ansicht der Bahnhöfe, einschließlich ihrer Adressen, Betreiber,
+        Diese Seite bietet eine detaillierte Ansicht der Bahnhöfe, einschließlich ihrer Adressen, Parkplatz,
         Internetverfügbarkeit, Barrierefreiheit und lokalen Transportmöglichkeiten.
       </p>
     </div>
@@ -15,10 +15,13 @@
   <div class="grid grid-cols-2 gap-4 mt-11 mb-0 items-center">
 
     <!-- Current Train-Station indicator -->
-    <h3 class="text-lg font-semibold">Aktueller Bahnhof: <span class="text-red-700">{{currentTrainStation}}</span></h3>
+    <h3 class="text-lg font-semibold mb-2">Aktueller Bahnhof: <span class="text-red-700">{{currentTrainStation}}</span></h3>
 
     <!-- Searchbar -->
     <div class="flex justify-center flex-1 justify-self-end h-10 mb-2">
+      <div class="relative self-center mr-5 hidden" id="error_trainstation">
+        <span class="text-red-700">Kein Bahnhof gefunden.</span>
+      </div>
       <div class="relative focus-within:text-red-500">
         <div class="absolute inset-y-0 flex items-center pl-2">
 
@@ -29,17 +32,15 @@
         </div>
 
         <!-- Search-Input -->
-        <input id="searchStation" class="mt-0 w-full h-10 pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0
+        <input id="searchStation" class="mt-0 h-10 w-72 pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0
         rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600
         dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:outline-none
-        focus:shadow-outline-purple form-input" type="text" placeholder="Bahnhof suche" aria-label="Search"
+        focus:shadow-outline-purple form-input" type="text" placeholder="Bahnhof suchen" aria-label="Search"
         (keyup.enter)="changeTrainStation()">
       </div>
     </div>
   </div>
 
   <!-- Table -->
-  <app-table [columns]=tableHeaders
-             [rows]=tableData>
-  </app-table>
+  <app-table [columns]=tableHeaders [rows]=tableData></app-table>
 </div>

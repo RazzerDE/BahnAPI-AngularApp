@@ -6,12 +6,23 @@ module.exports = {
     "./node_modules/flowbite/**/*.js"
   ],
   theme: {
-    extend: {},
+    extend: {
+      maxHeight: {
+        '60vh': '60vh',
+        '30vh': '30vh',
+        '40vh': '40vh',
+      },
+    },
     colors: {
       primary: {
         600: '#e02424',
         700: '#c31313'
       }
+    },
+  },
+  variants: {
+    extend: {
+      maxHeight: ['responsive'],
     },
   },
   plugins: [

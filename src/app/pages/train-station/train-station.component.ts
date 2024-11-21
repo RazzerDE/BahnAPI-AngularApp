@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import {TableComponent} from "../../util/table/table.component";
+import {ApiService} from "../../services/api-service/api.service";
+import {StationData} from "../../services/api-service/types/station-data";
 
 @Component({
   selector: 'app-train-station',
@@ -11,11 +13,25 @@ import {TableComponent} from "../../util/table/table.component";
   styleUrl: './train-station.component.css'
 })
 export class TrainStationComponent {
-  public currentTrainStation: string = "Mageburg Hbf";
-  public tableHeaders: string[] = ['Adresse/Koordinaten', 'Betreiber', 'Internet vorhanden', 'barrierefrei', 'hat lokale Transportmöglichkeiten']
-  public tableData: string[][] = [
-    ['123 Main St , 74.0060° W', 'Company A', 'Yes', 'Yes', 'Yes']
-  ];
+  public currentTrainStation: string = "";
+  public tableHeaders: string[] = ['Station', 'WLAN', 'Parkplatz', 'barrierefrei', 'Fahrstuhl', 'Adresse']
+  public tableData: string[][] = [];
+
+  private isTableRefreshActive: boolean = false;
+
+  constructor(protected apiService: ApiService) {
+    this.apiService.isLoading = true;
+
+    if (this.apiService.stations.length === 0) {
+      this.apiService.getDataFromStations();
+    }
+
+    if (this.apiService.elevators.length === 0) {
+      this.apiService.checkStationsForElevator();
+    }
+
+    this.generateStationsTable();
+  }
 
   /**
    * Changes the current train station based on the value entered in the search input field.
@@ -23,9 +39,72 @@ export class TrainStationComponent {
    */
   changeTrainStation(): void {
     const searchInput = document.getElementById('searchStation') as HTMLInputElement;
-    if (searchInput.value === '' || searchInput.value.startsWith(' ')) {
-      return;
+    const error_box: HTMLSpanElement = document.getElementById('error_trainstation') as HTMLSpanElement;
+    if (error_box && !error_box.classList.contains('hidden')) {
+      error_box.classList.add('hidden');
     }
-    this.currentTrainStation = searchInput.value;
+
+    if (searchInput.value === '' || searchInput.value.startsWith(' ')) {
+      this.apiService.getDataFromStations();
+    } else { // check if station is already cached
+      const searchValue = searchInput.value.toLowerCase();
+      const cachedStation = this.apiService.stations.find(station => station.name.toLowerCase() === searchValue);
+
+      if (cachedStation) {
+        this.apiService.stations = [cachedStation];
+        this.mapStationsToTableData();
+      } else {
+        this.apiService.getDataByStation(searchValue);
+      }
+    }
+
+    // update listed trainstation
+    this.currentTrainStation = 'Lädt..';
+    this.apiService.isLoading = true;
+    setTimeout(() => {this.mapStationsToTableData(); }, 1000);
+  }
+
+  /**
+   * Generates the table data for the stations.
+   * If the stations data is not yet available, it waits for 2 seconds and then attempts to generate the table data.
+   */
+  generateStationsTable(): void {
+    if (this.apiService.stations.length === 0) { // make API call to get station data
+      this.apiService.isLoading = true;
+      setTimeout(() => {this.mapStationsToTableData(); }, 2000);
+    } else { // already cached
+      this.mapStationsToTableData();
+    }
+
+    // update the table every 5s
+    if (!this.isTableRefreshActive) {
+      setInterval(() => { this.mapStationsToTableData(); }, 5000);
+    }
+  }
+
+  /**
+   * Maps the stations data to the table data format.
+   * Each station is represented as an array of strings containing its name, availability of WiFi, parking, stepless access, elevator, and address.
+   * The table data is then sorted alphabetically by station name.
+   */
+  private mapStationsToTableData(): void {
+    if (this.apiService.stations.length === 1) {
+      this.currentTrainStation = this.apiService.stations[0].name;
+    } else {
+      this.currentTrainStation = "";
+    }
+
+    this.apiService.isLoading = false;
+    this.tableData = this.apiService.stations.map((station: StationData): string[] => {
+      const hasElevator: boolean = this.apiService.elevators.some(elevator => elevator.stationnumber === station.number);
+      return [
+        station.name,
+        station.hasWiFi ? '✔' : '❌',
+        station.hasParking ? '✔' : '❌',
+        station.hasSteplessAccess ? '✔' : '❌',
+        hasElevator ? '✔' : '❌',
+        `${station.mailingAddress.street}, ${station.mailingAddress.city}`
+      ];
+    }).sort((a, b) => a[0].localeCompare(b[0]));
   }
 }

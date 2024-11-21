@@ -8,6 +8,20 @@ body * {
   @apply transition-colors duration-200;
 }
 
+/* Custom scrollbar */
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: theme('colors.gray.700');
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
 .input-box {
   -webkit-appearance: none;
   -moz-appearance: none;
