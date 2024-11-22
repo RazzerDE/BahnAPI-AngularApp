@@ -21,7 +21,7 @@ export class ApiService {
   private ENDPOINT_FASTA: string = "fasta/v2/";
 
   current_station: Station | undefined;
-  station_stops: Schedule[] = [];
+  station_stops: Timetable | undefined;
   stations: StationData[] = [];
   elevators: Elevator[] = [];
 
@@ -100,9 +100,12 @@ export class ApiService {
         // set default values for date and hour if they are not provided
         date = date || new Date().toISOString().slice(2, 10).replace(/-/g, '');
         hour = hour || new Date().getHours().toString().padStart(2, '0');
+        console.log(station_name);
+        console.log(date);
+        console.log(hour);
         this.fetchPlannedData(this.current_station, date, hour).subscribe({
           next: (data: Timetable): void => {
-            this.station_stops = data.s;
+            this.station_stops = data;
           }, error: (error): void => {
             console.error(error);
           }

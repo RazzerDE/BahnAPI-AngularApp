@@ -6,7 +6,7 @@
       <thead class="sticky top-0 z-10 bg-gray-200/50 dark:bg-gray-800/40">
       <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 dark:text-gray-400">
         @for (column of columns; track columns; let i = $index) {
-          <th class="px-4 py-3" [ngClass]="{'pl-4': i >= columns.length - 2}">{{ column }}</th>
+          <th class="px-2 py-3 sm:px-4" [ngClass]="{'pl-4': i >= columns.length - 2, 'w-1/4': i === columns.length - 1}">{{ column }}</th>
         }
       </tr>
       </thead>
@@ -41,8 +41,7 @@
           @for (row of rows; track $index) {
             <tr class="text-gray-700 dark:text-gray-400 hover:bg-gray-700/30">
               @for (cell of row; track $index) {
-                <td class="px-6 py-3"
-                    [ngClass]="{'pl-5': $index != 0 && columns.length > 6, 'pl-4': $index === 0}">{{ cell }}</td>
+                <td class="px-2 py-3 sm:px-6" [ngClass]="{'pl-5': $index === 0, 'w-1/4': $index === row.length - 1}">{{ cell }}</td>
               }
             </tr>
           }

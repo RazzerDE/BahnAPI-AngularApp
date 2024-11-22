@@ -34,8 +34,8 @@
                                                     dark:border-gray-600 dark:bg-gray-700 focus:border-red-400
                                                     focus:outline-none focus:shadow-outline-red input-box
                                                     dark:focus:shadow-outline-gray" required
-             [attr.placeholder]="showRoutePlaning ? 'Startbahnhof festlegen..' : 'Wunschbahnhof festlegen..'"
-             [ngClass]="trainStationForm.invalid && invalidTrainstation ? '!border-red-600 dark:border-red-600' : ''">
+             [attr.placeholder]="showRoutePlaning ? 'Von Bahnhof..' : 'Zielbahnhof festlegen..'"
+             (keyup.enter)="getTrainstationData()">
       <div class="absolute inset-y-0 flex items-center ml-2 pointer-events-none">
         <svg class="w-5 h-5" aria-hidden="true" fill="#6b7280" xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
@@ -46,8 +46,9 @@
     <div class="relative text-gray-500 focus-within:text-red-600 dark:focus-within:text-red-400 slide-in
                 transition-all duration-300 ease-out translate-x-0 max-w-2xl" [class.hidden]="!showRoutePlaning">
       <input class="block !pl-9 mt-1 text-sm text-black dark:text-gray-300
-    dark:border-gray-600 dark:bg-gray-700 focus:border-red-400 focus:outline-none focus:shadow-outline-red
-    input-box dark:focus:shadow-outline-gray w-full" placeholder="Wunschbahnhof festlegen.." />
+          dark:border-gray-600 dark:bg-gray-700 focus:border-red-400 focus:outline-none focus:shadow-outline-red
+          input-box dark:focus:shadow-outline-gray w-full" placeholder="Nach Bahnhof.."
+             (keyup.enter)="getTrainstationData()"/>
       <div class="absolute inset-y-0 flex items-center ml-2 pointer-events-none">
         <svg class="w-5 h-5" aria-hidden="true" fill="#6b7280" xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 297 297" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
@@ -63,6 +64,8 @@
       </div>
     </div>
     <button type="submit" (click)="getTrainstationData()"
+            [disabled]="(trainStationForm.invalid || trainStationForm.value.toString().trim() == '') && !changedTime"
+            [ngClass]="{'!bg-red-900': (trainStationForm.invalid || trainStationForm.value.toString().trim() == '') && !changedTime}"
             class="flex items-center justify-between px-4 py-2 text-sm font-medium text-white transition-colors
       duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700
       focus:outline-none focus:shadow-outline-red cp-0.5 h-12 mt-0.5">
@@ -77,13 +80,14 @@ S381.9,104.65,381.9,203.25z"/>
     </button>
   </div>
 
-  <!-- Second Line (Date & Route Setting) -->
+  <!-- Second Line (Time & Route Setting) -->
   <div class="relative flex flex-nowrap justify-between">
-    <div class="mt-6 ml-2 flex justify-start gap-x-8 w-full">
-      <!-- Date Picker -->
+    <div class="mt-6 ml-2 flex justify-start gap-x-8 w-full relative">
+      <!-- Time Picker -->
       <div class="relative">
-        <button class="flex w-auto flex-col text-gray-600 dark:text-gray-400 -ml-2 hover:bg-gray-700 hover:dark:bg-white
-                     hover:dark:bg-opacity-5 hover:bg-opacity-5 rounded-lg pl-2" (click)="openDatepicker()">
+        <button id="selectTimeToggle" data-dropdown-toggle="time-range-container"
+                class="flex w-auto flex-col text-gray-600 dark:text-gray-400 -ml-2 hover:bg-gray-700
+                hover:dark:bg-white hover:dark:bg-opacity-5 hover:bg-opacity-5 rounded-lg pl-2" (click)="showTimepicker()">
           <div class="flex">
             <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="#6b7280" aria-hidden="true" viewBox="0 0 24 24"
                  xmlns="http://www.w3.org/2000/svg" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -93,7 +97,7 @@ S381.9,104.65,381.9,203.25z"/>
                  5.40973 3.40973 5.71569 3.21799 6.09202C3 6.51984 3 7.07989 3 8.2V17.8C3 18.9201 3 19.4802 3.21799
                  19.908C3.40973 20.2843 3.71569 20.5903 4.09202 20.782C4.51984 21 5.07989 21 6.2 21Z" />
             </svg>
-            <h2 class="-ml-1 pl-1.5 whitespace-nowrap leading-6 font-bold" id="date-pick">{{ currentDate }}</h2>
+            <h2 class="-ml-1 pl-1.5 whitespace-nowrap leading-6 font-bold" id="date-pick">{{ currentTime }}</h2>
             <svg class="mt-1.5 w-3.5 h-3.5 mx-2" viewBox="0 0 16 16" fill="#dc2626"  fill-rule="evenodd" aria-hidden="true"
                  xmlns="http://www.w3.org/2000/svg" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
               <g transform="rotate(45 1254.793 524.438)">
@@ -101,12 +105,23 @@ S381.9,104.65,381.9,203.25z"/>
               </g>
             </svg>
           </div>
-          <span class="ml-7.5">Filtern nach Datum</span>
+          <span class="ml-7.5">Filtern nach Uhrzeit</span>
         </button>
 
-        <input class="absolute left-0 top-full -mt-6 -z-10 w-full" id="inline-datepicker" inline-datepicker />
+        <!-- Dropdown menu -->
+        <div id="time-range-container" #timepicker class="max-w-[16rem] mx-auto p-4 rounded-xl bg:white
+        dark:bg-gray-700 hidden z-20" (focusout)="toggleTimepicker()" (keyup.enter)="toggleTimepicker(true)">
+          <label for="start-time" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Uhrzeit:</label>
+            <div class="relative">
+              <input type="time" id="start-time" class="bg-gray-50 border leading-none border-gray-300 text-gray-900
+                text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600
+                dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500
+                dark:focus:border-blue-500 pr-10" min="00:00" max="23:00" step="3600" required
+                     [value]="this.date_splitted[1] + ':00'"/>
+              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400">Uhr</span>
+            </div>
+        </div>
       </div>
-
       <!-- Route Planner -->
       <button class="flex w-56 flex-col text-gray-600 dark:text-gray-400 -ml-2 hover:bg-gray-700 hover:dark:bg-white
                hover:dark:bg-opacity-5 hover:bg-opacity-5 rounded-lg pl-2" (click)="toggleRoutePlaning()">
@@ -141,6 +156,7 @@ S381.9,104.65,381.9,203.25z"/>
 
       <!-- Tooltip -->
       <span class="ml-auto self-center w-5/12 text-right text-gray-600 dark:text-gray-400">Die Angabe des Datums & der Endhaltestelle ist optional.</span>
+
     </div>
   </div>
 </div>
