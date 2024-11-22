@@ -76,8 +76,12 @@ export class StartMainComponent implements OnInit {
     const datepickerInput = document.querySelector('.datepicker');
 
     if (datepickerInput) { // another bypass for flowbite because "autoSelectToday" doesn't work as it should.
-      const cells: NodeListOf<HTMLElement> = datepickerInput.querySelectorAll('.datepicker-cell');
+      const cells: Element[] = Array.from(datepickerInput.querySelectorAll('.datepicker-cell')).reverse();
       for (let i: number = 0; i < cells.length; i++) {
+        if (cells[i].classList.contains('dark:!bg-primary-600')) {
+          break; // if an element is already selected, don't select another one
+
+        }
         if (cells[i].textContent === new Date().getDate().toString()) {
           cells[i].classList.add('dark:bg-primary-600', 'bg-primary-700');
           break;
@@ -86,7 +90,7 @@ export class StartMainComponent implements OnInit {
     }
 
     if (datepickerElement) {
-      if (!datepickerElement.classList.contains('is-active')) {
+      if (!datepickerElement.classList.contains('is-active') || (datepickerInput && datepickerInput.classList.contains('hidden'))) {
         datepickerElement.dispatchEvent(new Event('focus'));
 
         // add custom listener because the ** blowbite component doesn't redirect his damn events
