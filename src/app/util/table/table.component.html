@@ -17,11 +17,13 @@
         <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
 
         <!-- Show if API requests fail -->
-        <tr #invalidAlert class="hidden">
+        <tr #invalidAlert id='invalidAlert' class="hidden">
           <td [attr.colspan]="columns.length" class="text-center py-5">
             <div class="flex flex-col items-center justify-center">
-              <h2 class="text-red-700">API-Daten ungültig!</h2>
-              <span class="text-sm text-gray-600 dark:text-gray-400">Überprüfe, ob die API-Daten in der Datei <code>src/app/services/types/environment.ts</code> korrekt sind.</span>
+              <h2 class="text-red-700" id="alert_title">API-Daten ungültig!</h2>
+              <span class="text-sm text-gray-600 dark:text-gray-400" id="alert_info">
+                Überprüfe, ob die API-Daten in der Datei <code>src/app/services/types/environment.ts</code> korrekt sind.
+              </span>
             </div>
           </td>
         </tr>

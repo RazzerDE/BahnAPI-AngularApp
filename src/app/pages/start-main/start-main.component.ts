@@ -2,7 +2,6 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {NavigationEnd, Router, RouterLink} from "@angular/router";
 import {NgClass} from "@angular/common";
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {Datepicker, DatepickerOptions} from "flowbite";
 import {TableComponent} from "../../util/table/table.component";
 import {ApiService} from "../../services/api-service/api.service";
 import {Schedule} from "../../services/api-service/types/timetables";
@@ -22,11 +21,12 @@ import {Schedule} from "../../services/api-service/types/timetables";
 })
 export class StartMainComponent implements OnInit {
   trainStationForm: FormControl<any> = new FormControl('', Validators.required);
-  @ViewChild('invalidAlert') alert_box!: ElementRef;
-  @ViewChild('time-range-container') timepicker!: ElementRef;
+  @ViewChild('timepicker') timepicker!: ElementRef;
+  @ViewChild('start_time') input_time!: ElementRef;
+  @ViewChild('selectTimeToggle') selectTimeToggle!: ElementRef;
 
   protected currentTime: string;
-  protected changedTime: boolean = true;
+  protected changedTime: boolean = false;
   protected showRoutePlaning: boolean = false;
 
   protected tableHeader: string[] = ['Uhrzeit (Gepl. Abfahrt)', 'Gleis', 'Zugname', 'Zugart', 'Von Bahnhof', 'Nach Zielbahnhof'];
@@ -44,7 +44,7 @@ export class StartMainComponent implements OnInit {
 
     // update table
     this.apiService.isLoading = true;
-    this.apiService.getTimetableData(this.start_station_name, this.date_splitted[0], this.date_splitted[1]);
+    this.apiService.getTimetableData(this.start_station_name, this.date_splitted[0], this.date_splitted[1].split(':')[0]);
     setTimeout(() => {this.mapStationsToTableData(); }, 1000);
   }
 
@@ -58,22 +58,22 @@ export class StartMainComponent implements OnInit {
   }
 
   showTimepicker(): void {
+    setTimeout(() => { this.input_time.nativeElement.focus(); }, 100);
   }
 
   toggleTimepicker(close?: boolean): void {
-    const timepicker: HTMLDivElement = document.getElementById('time-range-container') as HTMLDivElement;
-    const input_time: HTMLInputElement = document.getElementById('start-time') as HTMLInputElement;
-    if (this.date_splitted[1] === input_time.value.replace(':00:00', ':00')) { return; }
+    if (this.date_splitted[1] === this.input_time.nativeElement.value.replace(':00:00', ':00')) { return; }
 
-    console.log(timepicker.classList.contains('hidden'));
-    if (close && !timepicker.classList.contains('hidden')) {
-      timepicker.classList.add('hidden');
+    if (close && !this.timepicker.nativeElement.classList.contains('hidden')) {
+      // close timepicker manually if the user closes it with enter key
+      this.timepicker.nativeElement.classList.add('hidden');
+      this.selectTimeToggle.nativeElement.click();
+
+      this.changedTime = true;
     }
 
-
-    this.date_splitted[1] = input_time.value;
+    this.date_splitted[1] = this.input_time.nativeElement.value;
     this.currentTime = `Heute, ab ${this.date_splitted[1]}`;
-
   }
 
   /**
@@ -89,14 +89,17 @@ export class StartMainComponent implements OnInit {
    * If the form is invalid, sets the invalidTrainstation flag to true and returns.
    */
   getTrainstationData(): void {
-    if (this.end_station_name === this.trainStationForm.value) { return; }
+    if (this.end_station_name === this.trainStationForm.value && !this.changedTime) { return; }
 
-    this.end_station_name = this.trainStationForm.value;
-    this.tableHeader[0] = this.tableHeader[0].replace('Abfahrt', 'Ankunft');
+    if (this.trainStationForm.valid) {
+      this.end_station_name = this.trainStationForm.value;
+    }
 
     // api request
+    this.changedTime = true;
     this.apiService.isLoading = true;
-    this.apiService.getTimetableData(this.end_station_name, this.date_splitted[0], this.date_splitted[1]);
+    this.apiService.getTimetableData(this.trainStationForm.invalid ? this.start_station_name : this.end_station_name,
+                                     this.date_splitted[0], this.date_splitted[1].split(':')[0]);
 
     // update table
     setTimeout(() => {this.mapStationsToTableData(); }, 2000);
@@ -106,12 +109,29 @@ export class StartMainComponent implements OnInit {
     this.apiService.isLoading = false;
 
     // no train found
-    if (!this.apiService.station_stops || (this.start_station_name && this.end_station_name)) {
-      this.alert_box.nativeElement.classList.remove('hidden');
+    const alert_box: HTMLDivElement = document.getElementById('invalidAlert') as HTMLDivElement;
+    if (!this.apiService.station_stops || (this.end_station_name === this.start_station_name)) {
+      const alert_title: HTMLHeadingElement = document.getElementById('alert_title') as HTMLHeadingElement;
+      const alert_info: HTMLSpanElement = document.getElementById('alert_info') as HTMLSpanElement;
+      this.tableData = [];
+      this.apiService.isEmptyResults = true;
+
+      if (this.end_station_name === this.start_station_name) {
+        alert_title.innerText = 'Ungültige Stationen';
+        alert_info.innerText = 'Die Start-Station kann nicht gleich der Ziel-Station sein.';
+      } else {
+        alert_title.innerText = 'Keine Züge gefunden';
+        alert_info.innerText = 'Es wurden keine Züge für die angegebenen Stationen gefunden.';
+      }
+
+      alert_box.classList.remove('hidden');
       return;
     }
 
-    // this.alert_box.nativeElement.classList.add('hidden');
+    if (!alert_box.classList.contains('hidden')) {
+      alert_box.classList.add('hidden');
+    }
+
     this.tableData = this.apiService.station_stops!.s
       .filter((train: Schedule) => train.dp)
       .map((train: Schedule): string[] => {
