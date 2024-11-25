@@ -71,7 +71,7 @@ export class DataVerifierService {
     // Normalize the name of the stations because of different naming conventions of the BahnAPI
     return timetable.s.filter((schedule: Schedule) => {
       if (schedule.dp && schedule.dp.ppth) {
-        const plannedPath = schedule.dp.ppth.split('|');
+        const plannedPath: string[] = schedule.dp.ppth.split('|');
         return plannedPath.some(station => this.normalizeStationName(station) === normalizedDestination);
       }
       return false;
@@ -118,6 +118,25 @@ export class DataVerifierService {
     if (alert_box.classList.contains('hidden')) { // Show the alert box
       alert_box.classList.remove('hidden');
     }
+  }
+
+  /**
+   * Formats the given time string to "HH:MM" format.
+   * @param pt - The time string in the format "YYYYMMDDHHMM".
+   * @returns The formatted time string.
+   */
+  formatTime(pt: string): string {
+    return `${pt.slice(6, 8)}:${pt.slice(8, 10)}`;
+  }
+
+  /**
+   * Checks if the given time string is after the specified hour.
+   * @param pt - The time string in the format "YYYYMMDDHHMM".
+   * @param hour - The hour in the format "HH:MM".
+   * @returns True if the time is after the specified hour, false otherwise.
+   */
+  isAfterHour(pt: string, hour: string): boolean {
+    return this.formatTime(pt) > hour;
   }
 
 }

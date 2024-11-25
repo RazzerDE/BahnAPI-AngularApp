@@ -26,7 +26,6 @@ export class StartMainComponent implements OnInit {
   @ViewChild('start_time') input_time!: ElementRef;
   @ViewChild('selectTimeToggle') selectTimeToggle!: ElementRef;
 
-  protected currentTime: string;
   protected changedTime: boolean = false;
   protected showRoutePlaning: boolean = false;
   protected readonly document: Document = document;
@@ -37,13 +36,12 @@ export class StartMainComponent implements OnInit {
   private today: Date = new Date();
   private date_string: string = this.today.toISOString().slice(2, 10).replace(/-/g, '') + ' ' + this.today.getHours().toString().padStart(2, '0');
   protected date_splitted: string[] = this.date_string.split(' ');
+  protected currentTimeHours: string = this.date_splitted[1] + ':00';
 
   protected end_station_name: string = '';
   protected start_station_name: string = 'Magdeburg Hbf';
 
   constructor(private apiService: ApiService, private router: Router, private dataVerifier: DataVerifierService) {
-    this.currentTime = `Heute, um ${this.date_splitted[1]}:00 Uhr`;
-
     // update table
     this.apiService.isLoading = true;
     this.apiService.getTimetableData(this.start_station_name, this.date_splitted[0], this.date_splitted[1].split(':')[0]);
@@ -60,7 +58,7 @@ export class StartMainComponent implements OnInit {
 
     this.trainStationForm.valueChanges.subscribe(value => {
       if (this.showRoutePlaning) {
-        console.log(value)
+        // update start_station_name if route planing is active
         this.start_station_name = value;
       }
     });
@@ -76,8 +74,6 @@ export class StartMainComponent implements OnInit {
    * @param close - Optional parameter to indicate if the timepicker should be closed.
    */
   protected toggleTimepicker(close?: boolean): void {
-    if (this.date_splitted[1] === this.input_time.nativeElement.value.replace(':00:00', ':00')) { return; }
-
     if (close && !this.timepicker.nativeElement.classList.contains('hidden')) {
       // close timepicker manually if the user closes it with enter key
       this.timepicker.nativeElement.classList.add('hidden');
@@ -85,8 +81,9 @@ export class StartMainComponent implements OnInit {
       this.changedTime = true;
     }
 
-    this.date_splitted[1] = this.input_time.nativeElement.value;
-    this.currentTime = `Heute, um ${this.date_splitted[1]} Uhr`;
+    // API can only handle the full hour, so we filter later
+    this.currentTimeHours = this.input_time.nativeElement.value;
+    this.date_splitted[1] = this.currentTimeHours;
   }
 
   /**
@@ -148,31 +145,27 @@ export class StartMainComponent implements OnInit {
       } else {
         this.dataVerifier.toggleErrorAlert('no_stations');
       }
-
       return;
     }
 
     this.dataVerifier.toggleErrorAlert();
     this.tableData = this.dataVerifier.station_stops!.s
-      .filter((train: Schedule) => train.dp)
+      .filter((train: Schedule) => train.dp && (parseInt(train.dp!.pt.slice(-4)) >= parseInt(this.currentTimeHours.replace(':', ''))))
       .map((train: Schedule): string[] => {
         return [
-          this.formatTime(train.dp!.pt),
+          this.dataVerifier.formatTime(train.dp!.pt),
           train.dp!.pp,
           train.tl.c + ' ' + train.tl.n,
           train.tl.c,
           this.start_station_name,
           this.end_station_name ? this.end_station_name : train.dp!.ppth.split('|').pop() || ''
         ];
-      }).sort((a, b) => a[0].localeCompare(b[0]));
+      }).sort((a: string[], b: string[]): number => a[0].localeCompare(b[0]));
+
+    if (this.tableData.length === 0) {
+      this.apiService.isEmptyResults = true;
+      this.dataVerifier.toggleErrorAlert('no_stations');
+    }
   }
 
-  /**
-   * Formats the given time string to "HH:MM" format.
-   * @param pt - The time string in the format "YYYYMMDDHHMM".
-   * @returns The formatted time string.
-   */
-  private formatTime(pt: string): string {
-    return `${pt.slice(6, 8)}:${pt.slice(8, 10)}`;
-  }
 }

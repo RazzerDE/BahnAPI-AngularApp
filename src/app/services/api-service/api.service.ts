@@ -57,7 +57,7 @@ export class ApiService {
         // set default values for date and hour if they are not provided
         date = date || new Date().toISOString().slice(2, 10).replace(/-/g, '');
         hour = hour || new Date().getHours().toString().padStart(2, '0');
-        this.fetchPlannedData(this.dataVerifier.current_station, date, hour).subscribe({
+        this.fetchPlannedData(this.dataVerifier.current_station, date, hour.split(':')[0]).subscribe({
           next: (data: Timetable): void => {
             if (end_station_name) { // check if end station exist
               this.fetchStation(end_station_name).subscribe({
