@@ -19,7 +19,7 @@
                                                     focus:outline-none focus:shadow-outline-red input-box
                                                     dark:focus:shadow-outline-gray" required
              [attr.placeholder]="showRoutePlaning ? 'Von Bahnhof..' : 'Zielbahnhof festlegen..'"
-             (keyup.enter)="updateTrainData()">
+             (keyup.enter)="updateTrainData()" [value]="showRoutePlaning ? this.start_station_name : ''">
       <div class="absolute inset-y-0 flex items-center ml-2 pointer-events-none">
         <svg class="w-5 h-5" aria-hidden="true" fill="#6b7280" xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
@@ -32,33 +32,31 @@
       <input class="block !pl-9 mt-1 text-sm text-black dark:text-gray-300
           dark:border-gray-600 dark:bg-gray-700 focus:border-red-400 focus:outline-none focus:shadow-outline-red
           input-box dark:focus:shadow-outline-gray w-full" placeholder="Nach Bahnhof.."
-             (keyup.enter)="updateTrainData()"/>
+             (keyup.enter)="updateTrainData()" [(ngModel)]="this.end_station_name" />
       <div class="absolute inset-y-0 flex items-center ml-2 pointer-events-none">
         <svg class="w-5 h-5" aria-hidden="true" fill="#6b7280" xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 297 297" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
           <path d="M148.5,0C87.43,0,37.747,49.703,37.747,110.797c0,91.026,99.729,179.905,103.976,183.645
-    c1.936,1.705,4.356,2.559,6.777,2.559c2.421,0,4.841-0.853,6.778-2.559c4.245-3.739,103.975-92.618,103.975-183.645
-    C259.253,49.703,209.57,0,148.5,0z M148.5,272.689c-22.049-21.366-90.243-93.029-90.243-161.892
-    c0-49.784,40.483-90.287,90.243-90.287s90.243,40.503,90.243,90.287C238.743,179.659,170.549,251.322,148.5,272.689z"/>
+            c1.936,1.705,4.356,2.559,6.777,2.559c2.421,0,4.841-0.853,6.778-2.559c4.245-3.739,103.975-92.618,103.975-183.645
+            C259.253,49.703,209.57,0,148.5,0z M148.5,272.689c-22.049-21.366-90.243-93.029-90.243-161.892
+            c0-49.784,40.483-90.287,90.243-90.287s90.243,40.503,90.243,90.287C238.743,179.659,170.549,251.322,148.5,272.689z"/>
           <path d="M148.5,59.183c-28.273,0-51.274,23.154-51.274,51.614c0,28.461,23.001,51.614,51.274,51.614
-    c28.273,0,51.274-23.153,51.274-51.614C199.774,82.337,176.773,59.183,148.5,59.183z M148.5,141.901
-    c-16.964,0-30.765-13.953-30.765-31.104c0-17.15,13.801-31.104,30.765-31.104c16.964,0,30.765,13.953,30.765,31.104
-    C179.265,127.948,165.464,141.901,148.5,141.901z"/>
+            c28.273,0,51.274-23.153,51.274-51.614C199.774,82.337,176.773,59.183,148.5,59.183z M148.5,141.901
+            c-16.964,0-30.765-13.953-30.765-31.104c0-17.15,13.801-31.104,30.765-31.104c16.964,0,30.765,13.953,30.765,31.104
+            C179.265,127.948,165.464,141.901,148.5,141.901z"/>
         </svg>
       </div>
     </div>
-    <button type="submit" (click)="updateTrainData()"
-            [disabled]="(trainStationForm.invalid || trainStationForm.value.toString().trim() == '') && !changedTime"
-            [ngClass]="{'!bg-red-900': (trainStationForm.invalid || trainStationForm.value.toString().trim() == '') && !changedTime}"
+    <button type="submit" (click)="updateTrainData()" [disabled]="isSearchBtnDisabled()" [ngClass]="{'!bg-red-900': isSearchBtnDisabled()}"
             class="flex items-center justify-between px-4 py-2 text-sm font-medium text-white transition-colors
       duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700
       focus:outline-none focus:shadow-outline-red cp-0.5 h-12 mt-0.5">
       <svg class="w-4 h-4 mr-2 -ml-1" fill="none" stroke="#FFFFFF" aria-hidden="true" viewBox="0 0 488.4 488.4"
            xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round" stroke-width="25">
         <path d="M0,203.25c0,112.1,91.2,203.2,203.2,203.2c51.6,0,98.8-19.4,134.7-51.2l129.5,129.5c2.4,2.4,5.5,3.6,8.7,3.6
-s6.3-1.2,8.7-3.6c4.8-4.8,4.8-12.5,0-17.3l-129.6-129.5c31.8-35.9,51.2-83,51.2-134.7c0-112.1-91.2-203.2-203.2-203.2
-S0,91.15,0,203.25z M381.9,203.25c0,98.5-80.2,178.7-178.7,178.7s-178.7-80.2-178.7-178.7s80.2-178.7,178.7-178.7
-S381.9,104.65,381.9,203.25z"/>
+          s6.3-1.2,8.7-3.6c4.8-4.8,4.8-12.5,0-17.3l-129.6-129.5c31.8-35.9,51.2-83,51.2-134.7c0-112.1-91.2-203.2-203.2-203.2
+          S0,91.15,0,203.25z M381.9,203.25c0,98.5-80.2,178.7-178.7,178.7s-178.7-80.2-178.7-178.7s80.2-178.7,178.7-178.7
+          S381.9,104.65,381.9,203.25z"/>
       </svg>
       <span>Suchen</span>
     </button>
@@ -133,9 +131,7 @@ S381.9,104.65,381.9,203.25z"/>
               </svg>
             </div>
           </div>
-          <span class="pl-7 ml-0.4 w-52-4">
-            Startbahnhof verändern
-          </span>
+          <span class="pl-7 ml-0.4 w-52-4">Startbahnhof verändern</span>
         </div>
       </button>
 

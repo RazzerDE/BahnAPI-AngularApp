@@ -21,6 +21,7 @@ import {DataVerifierService} from "../../services/data-verifier/data-verifier.se
 })
 export class StartMainComponent implements OnInit {
   trainStationForm: FormControl<any> = new FormControl('', Validators.required);
+
   @ViewChild('timepicker') timepicker!: ElementRef;
   @ViewChild('start_time') input_time!: ElementRef;
   @ViewChild('selectTimeToggle') selectTimeToggle!: ElementRef;
@@ -37,8 +38,8 @@ export class StartMainComponent implements OnInit {
   private date_string: string = this.today.toISOString().slice(2, 10).replace(/-/g, '') + ' ' + this.today.getHours().toString().padStart(2, '0');
   protected date_splitted: string[] = this.date_string.split(' ');
 
-  private end_station_name: string = '';
-  private start_station_name: string = 'Magdeburg Hbf';
+  protected end_station_name: string = '';
+  protected start_station_name: string = 'Magdeburg Hbf';
 
   constructor(private apiService: ApiService, private router: Router, private dataVerifier: DataVerifierService) {
     this.currentTime = `Heute, um ${this.date_splitted[1]}:00 Uhr`;
@@ -56,18 +57,25 @@ export class StartMainComponent implements OnInit {
         this.apiService.isLoading = true;
       }
     });
+
+    this.trainStationForm.valueChanges.subscribe(value => {
+      if (this.showRoutePlaning) {
+        console.log(value)
+        this.start_station_name = value;
+      }
+    });
   }
 
   /**
    * Displays the timepicker and focuses on the input element for better keyboard navigation.
    */
-  showTimepicker(): void { setTimeout(() => { this.input_time.nativeElement.focus(); }, 100); }
+  protected showTimepicker(): void { setTimeout(() => { this.input_time.nativeElement.focus(); }, 100); }
 
   /**
    * Toggles the visibility of the timepicker and updates the selected time.
    * @param close - Optional parameter to indicate if the timepicker should be closed.
    */
-  toggleTimepicker(close?: boolean): void {
+  protected toggleTimepicker(close?: boolean): void {
     if (this.date_splitted[1] === this.input_time.nativeElement.value.replace(':00:00', ':00')) { return; }
 
     if (close && !this.timepicker.nativeElement.classList.contains('hidden')) {
@@ -84,7 +92,7 @@ export class StartMainComponent implements OnInit {
   /**
    * Toggles the visibility of the route planning section.
    */
-  toggleRoutePlaning(): void {
+  protected toggleRoutePlaning(): void {
     this.showRoutePlaning = !this.showRoutePlaning;
   }
 
@@ -92,9 +100,9 @@ export class StartMainComponent implements OnInit {
    * Updates the train data based on the selected start and end stations and the selected time.
    * Makes an API request to fetch the timetable data and updates the table.
    */
-  updateTrainData(): void {
+  protected updateTrainData(): void {
     if (this.end_station_name === this.trainStationForm.value && !this.changedTime) { return; }
-    if (this.trainStationForm.valid) { this.end_station_name = this.trainStationForm.value; }
+    if (this.trainStationForm.valid && !this.end_station_name) { this.end_station_name = this.trainStationForm.value; }
 
     // api request
     this.changedTime = true;
@@ -109,6 +117,20 @@ export class StartMainComponent implements OnInit {
   }
 
   /**
+   * Determines if the search button should be disabled.
+   *
+   * The search button is disabled in the following cases:
+   * - The time has not changed and
+   * - The train station form is empty and
+   * - The route planning section is shown but the end station name is empty.
+   *
+   * @returns {boolean} - Returns true if the search button should be disabled, false otherwise.
+   */
+  protected isSearchBtnDisabled(): boolean {
+    return !this.changedTime && this.trainStationForm.value === '' && (!this.showRoutePlaning || this.end_station_name === '');
+  }
+
+  /**
    * Maps the station stops data to the table data format.
    * Updates the table data and handles error alerts if no train is found.
    */
@@ -116,7 +138,8 @@ export class StartMainComponent implements OnInit {
     this.apiService.isLoading = false;
 
     // no train found
-    if (!this.dataVerifier.station_stops || (this.end_station_name === this.start_station_name)) {
+    if (!this.dataVerifier.station_stops || this.dataVerifier.station_stops.s.length === 0 ||
+        this.end_station_name === this.start_station_name) {
       this.tableData = [];
       this.apiService.isEmptyResults = true;
 

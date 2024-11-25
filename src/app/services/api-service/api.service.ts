@@ -45,7 +45,12 @@ export class ApiService {
    */
   getTimetableData(station_name: string, date?: string, hour?: string, end_station_name?: string): void {
     this.fetchStation(station_name).subscribe({
-      next: (data: Stations): void => {
+      next: (data: Stations | string): void => {
+        if (data === null || typeof data === 'string') {
+          this.dataVerifier.station_stops = undefined;
+          return this.dataVerifier.toggleErrorAlert('invalid_station_start');  // start_station doesn't exist
+        }
+
         this.dataVerifier.current_station = data.station;
         localStorage.setItem('current_station', JSON.stringify(this.dataVerifier.current_station));
 

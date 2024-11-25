@@ -51,6 +51,10 @@ export class DataVerifierService {
     }
 
     if (temp_current_station) {
+      if (this.current_station === undefined) {
+        localStorage.removeItem('current_station');
+        return;
+      }
       this.current_station = JSON.parse(localStorage.getItem('current_station') || '');
     }
   }
@@ -103,7 +107,7 @@ export class DataVerifierService {
       alert_info.innerText = 'Die Start-Station kann nicht gleich der Ziel-Station sein.';
     } else if (error_type === 'no_stations') {
       alert_title.innerText = 'Keine Züge gefunden';
-      alert_info.innerText = 'Es wurden keine Züge für die angegebenen Stationen gefunden.';
+      alert_info.innerText = 'Es wurden keine Züge für die angegebene Direktverbindung gefunden.';
     } else if (error_type.startsWith('invalid_station')) {
       const stationType: string = error_type === 'invalid_station_start' ? 'Start' : 'End';
       alert_title.innerText = `Ungültige ${stationType}station`;
