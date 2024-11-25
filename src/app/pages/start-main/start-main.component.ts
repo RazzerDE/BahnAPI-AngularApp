@@ -1,5 +1,5 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {NavigationEnd, Router, RouterLink} from "@angular/router";
+import {NavigationEnd, Router} from "@angular/router";
 import {NgClass} from "@angular/common";
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {TableComponent} from "../../util/table/table.component";
@@ -11,7 +11,6 @@ import {DataVerifierService} from "../../services/data-verifier/data-verifier.se
   selector: 'app-start-main',
   standalone: true,
   imports: [
-    RouterLink,
     NgClass,
     ReactiveFormsModule,
     TableComponent,
@@ -59,10 +58,15 @@ export class StartMainComponent implements OnInit {
     });
   }
 
-  showTimepicker(): void {
-    setTimeout(() => { this.input_time.nativeElement.focus(); }, 100);
-  }
+  /**
+   * Displays the timepicker and focuses on the input element for better keyboard navigation.
+   */
+  showTimepicker(): void { setTimeout(() => { this.input_time.nativeElement.focus(); }, 100); }
 
+  /**
+   * Toggles the visibility of the timepicker and updates the selected time.
+   * @param close - Optional parameter to indicate if the timepicker should be closed.
+   */
   toggleTimepicker(close?: boolean): void {
     if (this.date_splitted[1] === this.input_time.nativeElement.value.replace(':00:00', ':00')) { return; }
 
@@ -70,7 +74,6 @@ export class StartMainComponent implements OnInit {
       // close timepicker manually if the user closes it with enter key
       this.timepicker.nativeElement.classList.add('hidden');
       this.selectTimeToggle.nativeElement.click();
-
       this.changedTime = true;
     }
 
@@ -80,17 +83,16 @@ export class StartMainComponent implements OnInit {
 
   /**
    * Toggles the visibility of the route planning section.
-   * When called, it switches the `showRoutePlaning` flag between true and false.
    */
   toggleRoutePlaning(): void {
     this.showRoutePlaning = !this.showRoutePlaning;
   }
 
   /**
-   * Validates the train station form and toggles the invalidTrainstation flag.
-   * If the form is invalid, sets the invalidTrainstation flag to true and returns.
+   * Updates the train data based on the selected start and end stations and the selected time.
+   * Makes an API request to fetch the timetable data and updates the table.
    */
-  getTrainstationData(): void {
+  updateTrainData(): void {
     if (this.end_station_name === this.trainStationForm.value && !this.changedTime) { return; }
     if (this.trainStationForm.valid) { this.end_station_name = this.trainStationForm.value; }
 
@@ -106,6 +108,10 @@ export class StartMainComponent implements OnInit {
     setTimeout(() => {this.mapStationsToTableData(); }, 2000);
   }
 
+  /**
+   * Maps the station stops data to the table data format.
+   * Updates the table data and handles error alerts if no train is found.
+   */
   private mapStationsToTableData(): void {
     this.apiService.isLoading = false;
 
@@ -138,9 +144,12 @@ export class StartMainComponent implements OnInit {
       }).sort((a, b) => a[0].localeCompare(b[0]));
   }
 
+  /**
+   * Formats the given time string to "HH:MM" format.
+   * @param pt - The time string in the format "YYYYMMDDHHMM".
+   * @returns The formatted time string.
+   */
   private formatTime(pt: string): string {
-    const hours = pt.slice(6, 8);
-    const minutes = pt.slice(8, 10);
-    return `${hours}:${minutes}`;
+    return `${pt.slice(6, 8)}:${pt.slice(8, 10)}`;
   }
 }

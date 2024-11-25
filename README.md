@@ -5,7 +5,7 @@
 <p align="center">
   <i align="center">Learn to work with API-REST Services in Typescript.<br />Developed using Angular with an HTML-Stack.</i>
 
-  ![image](https://i.imgur.com/LZjXHEy.png)
+  ![image](https://i.imgur.com/iQTeYR7.png)
 
 </p>
 
@@ -36,8 +36,9 @@
 It supports following <strong>features</strong>:
 <ul>
   <li>📚 <strong>Simple Caching-System</strong>: Don't make new API requests on page refresh.</li>
-  <li>📡 <strong>Data Loader GIF</strong>: While the table data is loading, a endless GIF will be shown.</li>
-  <li>📺 <strong>Responsive Website-Design</strong>: Our website is designed to be responsive on all devices.</li>
+  <li>📡 <strong>Table-Data Loader</strong>: While the table data is loading, a endless GIF will be shown.</li>
+  <li>📛 <strong>Error-Handling</strong>: Displays errors to the user if something in the API requests fails.</li>
+  <br /><li>📺 <strong>Responsive Website-Design</strong>: Our website is designed to be responsive on all devices.</li>
   <li>⚡ <strong>Optimized Tailwind-CSS</strong>: We used Tailwind-CSS to reduce the amount of loaded CSS and to keep things responsive.</li>
 </ul>
 

@@ -19,7 +19,7 @@
                                                     focus:outline-none focus:shadow-outline-red input-box
                                                     dark:focus:shadow-outline-gray" required
              [attr.placeholder]="showRoutePlaning ? 'Von Bahnhof..' : 'Zielbahnhof festlegen..'"
-             (keyup.enter)="getTrainstationData()">
+             (keyup.enter)="updateTrainData()">
       <div class="absolute inset-y-0 flex items-center ml-2 pointer-events-none">
         <svg class="w-5 h-5" aria-hidden="true" fill="#6b7280" xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
@@ -32,7 +32,7 @@
       <input class="block !pl-9 mt-1 text-sm text-black dark:text-gray-300
           dark:border-gray-600 dark:bg-gray-700 focus:border-red-400 focus:outline-none focus:shadow-outline-red
           input-box dark:focus:shadow-outline-gray w-full" placeholder="Nach Bahnhof.."
-             (keyup.enter)="getTrainstationData()"/>
+             (keyup.enter)="updateTrainData()"/>
       <div class="absolute inset-y-0 flex items-center ml-2 pointer-events-none">
         <svg class="w-5 h-5" aria-hidden="true" fill="#6b7280" xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 297 297" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
@@ -47,7 +47,7 @@
         </svg>
       </div>
     </div>
-    <button type="submit" (click)="getTrainstationData()"
+    <button type="submit" (click)="updateTrainData()"
             [disabled]="(trainStationForm.invalid || trainStationForm.value.toString().trim() == '') && !changedTime"
             [ngClass]="{'!bg-red-900': (trainStationForm.invalid || trainStationForm.value.toString().trim() == '') && !changedTime}"
             class="flex items-center justify-between px-4 py-2 text-sm font-medium text-white transition-colors
