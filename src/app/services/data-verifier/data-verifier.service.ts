@@ -83,4 +83,37 @@ export class DataVerifierService {
   normalizeStationName(stationName: string): string {
     return stationName.toLowerCase().replace(/[\s-]/g, '');
   }
+
+
+  toggleErrorAlert(error_type?: 'invalid_station_end' | 'invalid_station_start' | 'same_station' | 'no_stations'): void {
+    const alert_box: HTMLDivElement = document.getElementById('invalidAlert') as HTMLDivElement;
+    const alert_title: HTMLHeadingElement = document.getElementById('alert_title') as HTMLHeadingElement;
+    const alert_info: HTMLSpanElement = document.getElementById('alert_info') as HTMLSpanElement;
+
+    if (!error_type) { // Hide the alert box
+      alert_box.classList.add('hidden');
+      return;
+    }
+
+    // check if an error is already shown
+    if (!alert_box.classList.contains('hidden')) { return; }
+
+    if (error_type === 'same_station') {
+      alert_title.innerText = 'Ungültige Stationen';
+      alert_info.innerText = 'Die Start-Station kann nicht gleich der Ziel-Station sein.';
+    } else if (error_type === 'no_stations') {
+      alert_title.innerText = 'Keine Züge gefunden';
+      alert_info.innerText = 'Es wurden keine Züge für die angegebenen Stationen gefunden.';
+    } else if (error_type.startsWith('invalid_station')) {
+      const stationType: string = error_type === 'invalid_station_start' ? 'Start' : 'End';
+      alert_title.innerText = `Ungültige ${stationType}station`;
+      alert_info.innerText = `Die angegebene ${stationType}station wurde nicht in der API gefunden.
+                              Achte auf Bindestriche, Groß- und Kleinschreibung und Leerzeichen!`;
+    }
+
+    if (alert_box.classList.contains('hidden')) { // Show the alert box
+      alert_box.classList.remove('hidden');
+    }
+  }
+
 }

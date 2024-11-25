@@ -78,7 +78,6 @@ export class TrainStationComponent implements OnInit{
 
   /**
    * Generates the table data for the stations.
-   * If the stations data is not yet available, it waits for 2 seconds and then attempts to generate the table data.
    */
   generateStationsTable(): void {
     if (this.dataVerifier.stations.length === 0) { // make API call to get station data
@@ -86,11 +85,6 @@ export class TrainStationComponent implements OnInit{
       setTimeout(() => {this.mapStationsToTableData(); }, 2000);
     } else { // already cached
       this.mapStationsToTableData();
-    }
-
-    // update the table every 5s
-    if (!this.isTableRefreshActive) {
-      setInterval(() => { this.mapStationsToTableData(); }, 5000);
     }
   }
 
@@ -106,8 +100,17 @@ export class TrainStationComponent implements OnInit{
     } else {
       this.currentTrainStation = "";
       this.apiService.isEmptyResults = true;
+
+      // show error if station could not be found
+      if (this.dataVerifier.stations.length === 0) {
+        this.dataVerifier.toggleErrorAlert('no_stations');
+        this.apiService.isLoading = false;
+        this.tableData = [];
+        return;
+      }
     }
 
+    this.dataVerifier.toggleErrorAlert();
     this.apiService.isLoading = false;
     this.tableData = this.dataVerifier.stations.map((station: StationData): string[] => {
       const hasElevator: boolean = this.dataVerifier.elevators.some(elevator => elevator.stationnumber === station.number);

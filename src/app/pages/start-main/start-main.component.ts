@@ -29,6 +29,7 @@ export class StartMainComponent implements OnInit {
   protected currentTime: string;
   protected changedTime: boolean = false;
   protected showRoutePlaning: boolean = false;
+  protected readonly document: Document = document;
 
   protected tableHeader: string[] = ['Uhrzeit (Gepl. Abfahrt)', 'Gleis', 'Zugname', 'Zugart', 'Von Bahnhof', 'Nach Zielbahnhof'];
   protected tableData: string[][] = [];
@@ -91,16 +92,15 @@ export class StartMainComponent implements OnInit {
    */
   getTrainstationData(): void {
     if (this.end_station_name === this.trainStationForm.value && !this.changedTime) { return; }
-
-    if (this.trainStationForm.valid) {
-      this.end_station_name = this.trainStationForm.value;
-    }
+    if (this.trainStationForm.valid) { this.end_station_name = this.trainStationForm.value; }
 
     // api request
     this.changedTime = true;
     this.apiService.isLoading = true;
-    this.apiService.getTimetableData(this.start_station_name, this.date_splitted[0], this.date_splitted[1].split(':')[0],
-                                     this.end_station_name);
+    if (this.end_station_name != this.start_station_name) {
+      this.apiService.getTimetableData(this.start_station_name, this.date_splitted[0], this.date_splitted[1].split(':')[0],
+        this.end_station_name);
+    } else { return this.mapStationsToTableData(); }
 
     // update table
     setTimeout(() => {this.mapStationsToTableData(); }, 2000);
@@ -110,29 +110,20 @@ export class StartMainComponent implements OnInit {
     this.apiService.isLoading = false;
 
     // no train found
-    const alert_box: HTMLDivElement = document.getElementById('invalidAlert') as HTMLDivElement;
     if (!this.dataVerifier.station_stops || (this.end_station_name === this.start_station_name)) {
-      const alert_title: HTMLHeadingElement = document.getElementById('alert_title') as HTMLHeadingElement;
-      const alert_info: HTMLSpanElement = document.getElementById('alert_info') as HTMLSpanElement;
       this.tableData = [];
       this.apiService.isEmptyResults = true;
 
       if (this.end_station_name === this.start_station_name) {
-        alert_title.innerText = 'Ungültige Stationen';
-        alert_info.innerText = 'Die Start-Station kann nicht gleich der Ziel-Station sein.';
+        this.dataVerifier.toggleErrorAlert('same_station');
       } else {
-        alert_title.innerText = 'Keine Züge gefunden';
-        alert_info.innerText = 'Es wurden keine Züge für die angegebenen Stationen gefunden.';
+        this.dataVerifier.toggleErrorAlert('no_stations');
       }
 
-      alert_box.classList.remove('hidden');
       return;
     }
 
-    if (!alert_box.classList.contains('hidden')) {
-      alert_box.classList.add('hidden');
-    }
-
+    this.dataVerifier.toggleErrorAlert();
     this.tableData = this.dataVerifier.station_stops!.s
       .filter((train: Schedule) => train.dp)
       .map((train: Schedule): string[] => {
@@ -152,7 +143,4 @@ export class StartMainComponent implements OnInit {
     const minutes = pt.slice(8, 10);
     return `${hours}:${minutes}`;
   }
-
-
-  protected readonly document = document;
 }

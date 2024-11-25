@@ -44,7 +44,6 @@ export class ApiService {
    * @param end_station_name - The name of the destination station.
    */
   getTimetableData(station_name: string, date?: string, hour?: string, end_station_name?: string): void {
-    console.log(station_name);
     this.fetchStation(station_name).subscribe({
       next: (data: Stations): void => {
         this.dataVerifier.current_station = data.station;
@@ -55,8 +54,21 @@ export class ApiService {
         hour = hour || new Date().getHours().toString().padStart(2, '0');
         this.fetchPlannedData(this.dataVerifier.current_station, date, hour).subscribe({
           next: (data: Timetable): void => {
-            if (end_station_name) {
-              this.dataVerifier.station_stops = { ...data, s: this.dataVerifier.filterDirectRoutes(data, end_station_name) };
+            if (end_station_name) { // check if end station exist
+              this.fetchStation(end_station_name).subscribe({
+                next: (data_end: Stations | string): void => {
+                  if (data_end === null || typeof data_end === 'string') {
+                    this.dataVerifier.station_stops = undefined;
+                    return this.dataVerifier.toggleErrorAlert('invalid_station_end');  // end_station doesn't exist
+                  }
+
+                  this.dataVerifier.toggleErrorAlert(); // remove error alert if it exists
+                  this.dataVerifier.station_stops = { ...data, s: this.dataVerifier.filterDirectRoutes(data, end_station_name) };
+                }, error: (error): void => {
+                  console.error(error);
+                }
+              });
+
             } else {
               this.dataVerifier.station_stops = data;  // Save all fetched timetable data if no destination station is specified
             }
@@ -66,6 +78,9 @@ export class ApiService {
         });
 
       }, error: (error): void => {
+        if (error.status == 404) {
+          this.dataVerifier.toggleErrorAlert('invalid_station_start');  // start_station doesn't exist
+        } else if (error.status == 401) { this.isInvalidKey.next(true); }
         console.error(error);
       }
     });
@@ -83,9 +98,7 @@ export class ApiService {
         this.dataVerifier.stations = data.result;
         localStorage.setItem('stations', JSON.stringify(this.dataVerifier.stations));
       }, error: (error): void => {
-        if (error.status == 401) {
-          this.isInvalidKey.next(true);
-        }
+        if (error.status == 401) { this.isInvalidKey.next(true); }  // invalid api key provided
         console.error(error);
       }
     });
@@ -112,9 +125,7 @@ export class ApiService {
           this.dataVerifier.stations = [];
           localStorage.setItem('stations', JSON.stringify(this.dataVerifier.stations));
           return;
-        } else if (error.status == 401) {
-          this.isInvalidKey.next(true);
-        }
+        } else if (error.status == 401) { this.isInvalidKey.next(true); }
 
         console.error(error);
       }
