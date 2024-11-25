@@ -38,7 +38,9 @@ It supports following <strong>features</strong>:
   <li>📚 <strong>Simple Caching-System</strong>: Don't make new API requests on page refresh.</li>
   <li>📡 <strong>Table-Data Loader</strong>: While the table data is loading, a endless GIF will be shown.</li>
   <li>📛 <strong>Error-Handling</strong>: Displays errors to the user if something in the API requests fails.</li>
-  <br /><li>📺 <strong>Responsive Website-Design</strong>: Our website is designed to be responsive on all devices.</li>
+  <br />
+  <li>📺 <strong>Responsive Website-Design</strong>: Our website is designed to be responsive on all devices.</li>
+  <li>🎨 <strong>Theme-Switcher</strong>: You can switch between light and dark mode on this website.</li>
   <li>⚡ <strong>Optimized Tailwind-CSS</strong>: We used Tailwind-CSS to reduce the amount of loaded CSS and to keep things responsive.</li>
 </ul>
 
