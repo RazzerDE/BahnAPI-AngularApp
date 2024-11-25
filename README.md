@@ -45,7 +45,7 @@ It supports following <strong>features</strong>:
 ## 🔨 Installation
 › Before you can start exploring our small website for learning purposes, there are a few preparations you need to make.
 
-💡 › You will need a <strong>few registered Plans from the **[BahnAPI](https://developers.deutschebahn.com/db-api-marketplace/apis/frontpage)**:<br />
+💡 › You will need a <strong>few registered plans from the **[BahnAPI](https://developers.deutschebahn.com/db-api-marketplace/apis/frontpage)**:<br />
 - **[Free Timetables](https://developers.deutschebahn.com/db-api-marketplace/apis/product/26497)**
 - **[StaDa - Station Data](https://developers.deutschebahn.com/db-api-marketplace/apis/product/145141)**
 - **[FaSta - Station Facilities Status](https://developers.deutschebahn.com/db-api-marketplace/apis/product/130978)**
