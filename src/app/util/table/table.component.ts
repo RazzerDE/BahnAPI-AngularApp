@@ -1,6 +1,7 @@
 import {Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {NgClass, NgOptimizedImage} from "@angular/common";
 import {ApiService} from "../../services/api-service/api.service";
+import {DataVerifierService} from "../../services/data-verifier/data-verifier.service";
 
 @Component({
   selector: 'app-table',
@@ -19,7 +20,7 @@ export class TableComponent {
 
   @ViewChild('invalidAlert') alert_box!: ElementRef;
 
-  constructor(protected apiService: ApiService) {
+  constructor(protected apiService: ApiService, private dataVerifier: DataVerifierService) {
     this.apiService.isInvalidKey.subscribe((_value: boolean) => {
       this.apiService.isLoading = false;
 
@@ -27,8 +28,8 @@ export class TableComponent {
         this.alert_box.nativeElement.classList.remove('hidden');
       }
 
-      this.apiService.stations = [];
-      this.apiService.elevators = [];
+      this.dataVerifier.stations = [];
+      this.dataVerifier.elevators = [];
 
     });
   }

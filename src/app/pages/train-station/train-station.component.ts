@@ -3,6 +3,7 @@ import {TableComponent} from "../../util/table/table.component";
 import {ApiService} from "../../services/api-service/api.service";
 import {StationData} from "../../services/api-service/types/station-data";
 import {NavigationEnd, Router} from "@angular/router";
+import {DataVerifierService} from "../../services/data-verifier/data-verifier.service";
 
 @Component({
   selector: 'app-train-station',
@@ -20,14 +21,14 @@ export class TrainStationComponent implements OnInit{
 
   private isTableRefreshActive: boolean = false;
 
-  constructor(protected apiService: ApiService, private router: Router) {
+  constructor(protected apiService: ApiService, private router: Router, private dataVerifier: DataVerifierService) {
     this.apiService.isLoading = true;
 
-    if (this.apiService.stations.length === 0) {
+    if (this.dataVerifier.stations.length === 0) {
       this.apiService.getDataFromStations();
     }
 
-    if (this.apiService.elevators.length === 0) {
+    if (this.dataVerifier.elevators.length === 0) {
       this.apiService.checkStationsForElevator();
     }
 
@@ -59,10 +60,10 @@ export class TrainStationComponent implements OnInit{
       this.apiService.getDataFromStations();
     } else { // check if station is already cached
       const searchValue = searchInput.value.toLowerCase();
-      const cachedStation = this.apiService.stations.find(station => station.name.toLowerCase() === searchValue);
+      const cachedStation = this.dataVerifier.stations.find(station => station.name.toLowerCase() === searchValue);
 
       if (cachedStation) {
-        this.apiService.stations = [cachedStation];
+        this.dataVerifier.stations = [cachedStation];
         this.mapStationsToTableData();
       } else {
         this.apiService.getDataByStation(searchValue);
@@ -80,7 +81,7 @@ export class TrainStationComponent implements OnInit{
    * If the stations data is not yet available, it waits for 2 seconds and then attempts to generate the table data.
    */
   generateStationsTable(): void {
-    if (this.apiService.stations.length === 0) { // make API call to get station data
+    if (this.dataVerifier.stations.length === 0) { // make API call to get station data
       this.apiService.isLoading = true;
       setTimeout(() => {this.mapStationsToTableData(); }, 2000);
     } else { // already cached
@@ -99,17 +100,17 @@ export class TrainStationComponent implements OnInit{
    * The table data is then sorted alphabetically by station name.
    */
   private mapStationsToTableData(): void {
-    if (this.apiService.stations.length === 1) {
+    if (this.dataVerifier.stations.length === 1) {
       this.apiService.isEmptyResults = false;
-      this.currentTrainStation = this.apiService.stations[0].name;
+      this.currentTrainStation = this.dataVerifier.stations[0].name;
     } else {
       this.currentTrainStation = "";
       this.apiService.isEmptyResults = true;
     }
 
     this.apiService.isLoading = false;
-    this.tableData = this.apiService.stations.map((station: StationData): string[] => {
-      const hasElevator: boolean = this.apiService.elevators.some(elevator => elevator.stationnumber === station.number);
+    this.tableData = this.dataVerifier.stations.map((station: StationData): string[] => {
+      const hasElevator: boolean = this.dataVerifier.elevators.some(elevator => elevator.stationnumber === station.number);
       return [
         station.name,
         station.hasWiFi ? '✔' : '❌',

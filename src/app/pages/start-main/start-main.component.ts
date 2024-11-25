@@ -5,6 +5,7 @@ import {FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angula
 import {TableComponent} from "../../util/table/table.component";
 import {ApiService} from "../../services/api-service/api.service";
 import {Schedule} from "../../services/api-service/types/timetables";
+import {DataVerifierService} from "../../services/data-verifier/data-verifier.service";
 
 @Component({
   selector: 'app-start-main',
@@ -39,8 +40,8 @@ export class StartMainComponent implements OnInit {
   private end_station_name: string = '';
   private start_station_name: string = 'Magdeburg Hbf';
 
-  constructor(private apiService: ApiService, private router: Router) {
-    this.currentTime = `Heute, ab ${this.date_splitted[1]}:00`;
+  constructor(private apiService: ApiService, private router: Router, private dataVerifier: DataVerifierService) {
+    this.currentTime = `Heute, um ${this.date_splitted[1]}:00 Uhr`;
 
     // update table
     this.apiService.isLoading = true;
@@ -73,7 +74,7 @@ export class StartMainComponent implements OnInit {
     }
 
     this.date_splitted[1] = this.input_time.nativeElement.value;
-    this.currentTime = `Heute, ab ${this.date_splitted[1]}`;
+    this.currentTime = `Heute, um ${this.date_splitted[1]} Uhr`;
   }
 
   /**
@@ -98,8 +99,8 @@ export class StartMainComponent implements OnInit {
     // api request
     this.changedTime = true;
     this.apiService.isLoading = true;
-    this.apiService.getTimetableData(this.trainStationForm.invalid ? this.start_station_name : this.end_station_name,
-                                     this.date_splitted[0], this.date_splitted[1].split(':')[0]);
+    this.apiService.getTimetableData(this.start_station_name, this.date_splitted[0], this.date_splitted[1].split(':')[0],
+                                     this.end_station_name);
 
     // update table
     setTimeout(() => {this.mapStationsToTableData(); }, 2000);
@@ -110,7 +111,7 @@ export class StartMainComponent implements OnInit {
 
     // no train found
     const alert_box: HTMLDivElement = document.getElementById('invalidAlert') as HTMLDivElement;
-    if (!this.apiService.station_stops || (this.end_station_name === this.start_station_name)) {
+    if (!this.dataVerifier.station_stops || (this.end_station_name === this.start_station_name)) {
       const alert_title: HTMLHeadingElement = document.getElementById('alert_title') as HTMLHeadingElement;
       const alert_info: HTMLSpanElement = document.getElementById('alert_info') as HTMLSpanElement;
       this.tableData = [];
@@ -132,7 +133,7 @@ export class StartMainComponent implements OnInit {
       alert_box.classList.add('hidden');
     }
 
-    this.tableData = this.apiService.station_stops!.s
+    this.tableData = this.dataVerifier.station_stops!.s
       .filter((train: Schedule) => train.dp)
       .map((train: Schedule): string[] => {
         return [
@@ -140,9 +141,7 @@ export class StartMainComponent implements OnInit {
           train.dp!.pp,
           train.tl.c + ' ' + train.tl.n,
           train.tl.c,
-          // Start station
           this.start_station_name,
-          // End station
           this.end_station_name ? this.end_station_name : train.dp!.ppth.split('|').pop() || ''
         ];
       }).sort((a, b) => a[0].localeCompare(b[0]));

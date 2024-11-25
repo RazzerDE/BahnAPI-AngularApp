@@ -3,7 +3,7 @@ import {NgClass, NgOptimizedImage} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {PageItemComponent} from "../util/page-item/page-item.component";
 import {SidebarMobileService} from "../services/sidebar-mobile/sidebar-mobile.service";
-import {ApiService} from "../services/api-service/api.service";
+import {DataVerifierService} from "../services/data-verifier/data-verifier.service";
 
 @Component({
   selector: 'app-sidebar',
@@ -18,12 +18,12 @@ import {ApiService} from "../services/api-service/api.service";
   styleUrl: './sidebar.component.css'
 })
 export class SidebarComponent {
-  constructor(protected sidebarService: SidebarMobileService, private apiService: ApiService) {}
+  constructor(protected sidebarService: SidebarMobileService, private dataVerifier: DataVerifierService) {}
 
   protected clearCache(): void {
-    this.apiService.stations = [];
-    this.apiService.elevators = [];
-    this.apiService.current_station = undefined;
+    this.dataVerifier.stations = [];
+    this.dataVerifier.elevators = [];
+    this.dataVerifier.current_station = undefined;
     localStorage.clear();
   }
 

@@ -3,10 +3,10 @@ import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {BehaviorSubject, from, map, mergeMap, Observable} from "rxjs";
 import {environment} from "./types/environment";
 import {Station, Stations} from "./types/stations";
-import {Parser} from "xml2js";
-import {Schedule, Timetable} from "./types/timetables";
-import {StationData, StationDataResponse} from "./types/station-data";
+import {Timetable} from "./types/timetables";
+import {StationDataResponse} from "./types/station-data";
 import {Elevator} from "./types/elevators";
+import {DataVerifierService} from "../data-verifier/data-verifier.service";
 
 @Injectable({
   providedIn: 'root'
@@ -20,11 +20,6 @@ export class ApiService {
   private ENDPOINT_STATIONS: string = "station-data/v2/";
   private ENDPOINT_FASTA: string = "fasta/v2/";
 
-  current_station: Station | undefined;
-  station_stops: Timetable | undefined;
-  stations: StationData[] = [];
-  elevators: Elevator[] = [];
-
   isLoading: boolean = false;
   isEmptyResults: boolean = false; // used to hide loading spinner when no results are found
   isInvalidKey: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false); // used to check if the API key is invalid
@@ -35,54 +30,10 @@ export class ApiService {
     'DB-Client-Id': `${this.API_ID}`,
     'DB-Api-Key': `${this.API_KEY}`
   });
-  private parser: Parser = new Parser({explicitArray: false, trim: true, explicitRoot: false, mergeAttrs: true});
 
-  constructor(private http: HttpClient) {
-    this.updateCache();
+  constructor(private http: HttpClient, private dataVerifier: DataVerifierService) {
+    this.dataVerifier.updateCache();
   }
-
-  /**
-   * Converts an XML string to a JSON object - is used to parse the XML response from the API.
-   *
-   * @param xml - The XML string to be converted.
-   * @returns A promise that resolves to the JSON representation of the XML string.
-   */
-  private xmlToJson(xml: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.parser.parseString(xml, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  }
-
-  /**
-   * Updates the cache by retrieving stored data from localStorage.
-   * If data is found, it updates the corresponding properties in the service.
-   */
-  private updateCache(): void {
-    const temp_stations: string | null = localStorage.getItem('stations');
-    const temp_elevators: string | null = localStorage.getItem('elevators');
-    const temp_current_station: string | null = localStorage.getItem('current_station');
-    if (temp_stations && temp_stations.length > 0) {
-      this.stations = JSON.parse(localStorage.getItem('stations') || '');
-    }
-
-    if (temp_elevators && temp_elevators.length > 0) {
-      this.elevators = JSON.parse(localStorage.getItem('elevators') || '');
-    }
-
-    if (temp_current_station) {
-      this.current_station = JSON.parse(localStorage.getItem('current_station') || '');
-    }
-  }
-
-
-  //                                GET DATA FUNCTIONS
-
 
   /**
    * Fetches timetables for a given station, date, and hour and saves the data in a global variable.
@@ -90,22 +41,25 @@ export class ApiService {
    * @param station_name - The name of the train station.
    * @param date - The date in the format YYMMDD (example: 241120).
    * @param hour - The hour in the format HH (example: 21).
+   * @param end_station_name - The name of the destination station.
    */
-  getTimetableData(station_name: string, date?: string, hour?: string): void {
+  getTimetableData(station_name: string, date?: string, hour?: string, end_station_name?: string): void {
+    console.log(station_name);
     this.fetchStation(station_name).subscribe({
       next: (data: Stations): void => {
-        this.current_station = data.station;
-        localStorage.setItem('current_station', JSON.stringify(this.current_station));
+        this.dataVerifier.current_station = data.station;
+        localStorage.setItem('current_station', JSON.stringify(this.dataVerifier.current_station));
 
         // set default values for date and hour if they are not provided
         date = date || new Date().toISOString().slice(2, 10).replace(/-/g, '');
         hour = hour || new Date().getHours().toString().padStart(2, '0');
-        console.log(station_name);
-        console.log(date);
-        console.log(hour);
-        this.fetchPlannedData(this.current_station, date, hour).subscribe({
+        this.fetchPlannedData(this.dataVerifier.current_station, date, hour).subscribe({
           next: (data: Timetable): void => {
-            this.station_stops = data;
+            if (end_station_name) {
+              this.dataVerifier.station_stops = { ...data, s: this.dataVerifier.filterDirectRoutes(data, end_station_name) };
+            } else {
+              this.dataVerifier.station_stops = data;  // Save all fetched timetable data if no destination station is specified
+            }
           }, error: (error): void => {
             console.error(error);
           }
@@ -126,8 +80,8 @@ export class ApiService {
   getDataFromStations(limit?: number, federalstate?: string): void {
     this.fetchStations(limit || 12, federalstate || 'sachsen-anhalt').subscribe({
       next: (data: StationDataResponse): void => {
-        this.stations = data.result;
-        localStorage.setItem('stations', JSON.stringify(this.stations));
+        this.dataVerifier.stations = data.result;
+        localStorage.setItem('stations', JSON.stringify(this.dataVerifier.stations));
       }, error: (error): void => {
         if (error.status == 401) {
           this.isInvalidKey.next(true);
@@ -145,8 +99,8 @@ export class ApiService {
   getDataByStation(station_name: string): void {
     this.fetchStations(5, null, station_name).subscribe({
       next: (data: StationDataResponse): void => {
-        this.stations = data.result;
-        localStorage.setItem('stations', JSON.stringify(this.stations));
+        this.dataVerifier.stations = data.result;
+        localStorage.setItem('stations', JSON.stringify(this.dataVerifier.stations));
       }, error: (error): void => {
         // station not found
         if (error.status == 404) {
@@ -155,8 +109,8 @@ export class ApiService {
             error_box.classList.remove('hidden');
           }
 
-          this.stations = [];
-          localStorage.setItem('stations', JSON.stringify(this.stations));
+          this.dataVerifier.stations = [];
+          localStorage.setItem('stations', JSON.stringify(this.dataVerifier.stations));
           return;
         } else if (error.status == 401) {
           this.isInvalidKey.next(true);
@@ -176,8 +130,8 @@ export class ApiService {
   checkStationsForElevator(): void {
     this.fetchFacilities().subscribe({
       next: (data: Elevator[]): void => {
-        this.elevators = data;
-        localStorage.setItem('elevators', JSON.stringify(this.elevators));
+        this.dataVerifier.elevators = data;
+        localStorage.setItem('elevators', JSON.stringify(this.dataVerifier.elevators));
       },
       error: (error): void => {
         console.error(error);
@@ -209,7 +163,7 @@ export class ApiService {
   fetchStation(station_name: string): Observable<any> {
     return this.http.get(`${(this.API_URL + this.ENDPOINT_TIMETABLES + `station/${station_name}`)}`,
       {responseType: 'text', headers: this.headers})
-      .pipe(mergeMap(xmlResponse => from(this.xmlToJson(xmlResponse))),
+      .pipe(mergeMap(xmlResponse => from(this.dataVerifier.xmlToJson(xmlResponse))),
         map(response => response.__zone_symbol__value || response)
     );
   }
@@ -217,7 +171,7 @@ export class ApiService {
   fetchPlannedData(station: Station, date: string, hour: string): Observable<any> {
     return this.http.get(`${(this.API_URL + this.ENDPOINT_TIMETABLES + `plan/${station.eva}/${date}/${hour}`)}`,
       {responseType: 'text', headers: this.headers})
-      .pipe(mergeMap(xmlResponse => from(this.xmlToJson(xmlResponse))),
+      .pipe(mergeMap(xmlResponse => from(this.dataVerifier.xmlToJson(xmlResponse))),
         map(response => response.__zone_symbol__value || response)
     );
   }
