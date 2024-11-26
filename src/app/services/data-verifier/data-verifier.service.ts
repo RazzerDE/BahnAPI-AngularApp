@@ -9,6 +9,13 @@ import {Elevator} from "../api-service/types/elevators";
   providedIn: 'root'
 })
 export class DataVerifierService {
+  // used for the autocompletion feature at input fields
+  station_names: string[] = [];
+  filtered_station_names: string[] = [];
+  completion_name: string = '';
+  completion_name_end: string = '';
+
+  // used to store the current station and the station stops
   current_station: Station | undefined;
   station_stops: Timetable | undefined;
   stations: StationData[] = [];
@@ -42,6 +49,7 @@ export class DataVerifierService {
     const temp_stations: string | null = localStorage.getItem('stations');
     const temp_elevators: string | null = localStorage.getItem('elevators');
     const temp_current_station: string | null = localStorage.getItem('current_station');
+    const temp_station_names: string | null = localStorage.getItem('station_names');
     if (temp_stations && temp_stations.length > 0) {
       this.stations = JSON.parse(localStorage.getItem('stations') || '');
     }
@@ -50,11 +58,12 @@ export class DataVerifierService {
       this.elevators = JSON.parse(localStorage.getItem('elevators') || '');
     }
 
+    if (temp_station_names && temp_station_names.length > 0) {
+      this.station_names = JSON.parse(localStorage.getItem('station_names') || '');
+    }
+
     if (temp_current_station) {
-      if (this.current_station === undefined) {
-        localStorage.removeItem('current_station');
-        return;
-      }
+      if (this.current_station === undefined) { localStorage.removeItem('current_station'); return; }
       this.current_station = JSON.parse(localStorage.getItem('current_station') || '');
     }
   }
@@ -68,7 +77,7 @@ export class DataVerifierService {
    * @returns An array of schedules that have direct routes to the destination station.
    */
   filterDirectRoutes(timetable: Timetable, destinationStation: string, show_arrival?: boolean): Schedule[] {
-    const normalizedDestination = this.normalizeStationName(destinationStation);
+    const normalizedDestination: string = this.normalizeStationName(destinationStation);
     // Normalize the name of the stations because of different naming conventions of the BahnAPI
     return timetable.s.filter((schedule: Schedule) => {
       const path: string | undefined = show_arrival ? schedule.ar?.ppth : schedule.dp?.ppth;
@@ -91,10 +100,21 @@ export class DataVerifierService {
   }
 
 
+  /**
+   * Toggles the visibility of the error alert box based on the provided error type.
+   *
+   * @param error_type - The type of error to display. Can be one of the following:
+   *   - 'invalid_station_end': The end station is invalid.
+   *   - 'invalid_station_start': The start station is invalid.
+   *   - 'same_station': The start and end stations are the same.
+   *   - 'no_stations': No direct routes found for the specified stations.
+   *   If no error type is provided, the alert box will be hidden.
+   */
   toggleErrorAlert(error_type?: 'invalid_station_end' | 'invalid_station_start' | 'same_station' | 'no_stations'): void {
     const alert_box: HTMLDivElement = document.getElementById('invalidAlert') as HTMLDivElement;
     const alert_title: HTMLHeadingElement = document.getElementById('alert_title') as HTMLHeadingElement;
     const alert_info: HTMLSpanElement = document.getElementById('alert_info') as HTMLSpanElement;
+    if (!alert_box || !alert_title || !alert_info) { return; }
 
     if (!error_type) { // Hide the alert box
       alert_box.classList.add('hidden');
@@ -132,13 +152,47 @@ export class DataVerifierService {
   }
 
   /**
-   * Checks if the given time string is after the specified hour.
-   * @param pt - The time string in the format "YYYYMMDDHHMM".
-   * @param hour - The hour in the format "HH:MM".
-   * @returns True if the time is after the specified hour, false otherwise.
+   * Toggles the visibility of the auto-completion menu.
+   * If the menu is currently hidden, it will be shown if there are cached station names.
+   * If the menu is currently visible, it will be hidden.
    */
-  isAfterHour(pt: string, hour: string): boolean {
-    return this.formatTime(pt) > hour;
+  toggleAutoCompletionMenu(input: HTMLInputElement): void {
+    const autoCompletionMenu: HTMLDivElement = document.getElementById('autoCompletionMenu') as HTMLDivElement;
+    if (!autoCompletionMenu) { return; }
+
+    if (this.station_names.length === 0 || input.value.length === 0 || this.filtered_station_names.length === 0 || this.station_names.includes(input.value)) {
+      if (!autoCompletionMenu.classList.contains('hidden')) {
+        autoCompletionMenu.classList.add('hidden');
+      }
+    }
+
+    if (this.station_names.length > 0 && input.value.length > 0 && !this.station_names.includes(input.value)) {
+      // find only entries that start with the input value
+      this.filtered_station_names = this.station_names.filter((station: string): boolean => station.toLowerCase().startsWith(input.value.toLowerCase()));
+      if (autoCompletionMenu.classList.contains('hidden') && this.filtered_station_names.length > 0) {
+        autoCompletionMenu.classList.remove('hidden');
+      }
+    }
+  }
+
+  /**
+   * Updates the list of station names.
+   * If a single station name is provided, it adds it to the list if it doesn't already exist.
+   * If an array of station data is provided, it replaces the current list with the names from the array.
+   *
+   * @param station - A single station name or an array of station data.
+   */
+  updateStationList(station: string | StationData[]): void {
+    if (typeof station === 'string') {
+      if (!this.station_names.includes(station)) {
+        this.station_names.push(station);
+      }
+    } else {
+      this.station_names = station.map((stationData: StationData): string => stationData.name);
+    }
+
+    // update cache
+    localStorage.setItem('station_names', JSON.stringify(this.station_names));
   }
 
 }

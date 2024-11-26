@@ -4,12 +4,14 @@ import {ApiService} from "../../services/api-service/api.service";
 import {StationData} from "../../services/api-service/types/station-data";
 import {NavigationEnd, Router} from "@angular/router";
 import {DataVerifierService} from "../../services/data-verifier/data-verifier.service";
+import {AutoCompletionComponent} from "../../util/auto-completion/auto-completion.component";
 
 @Component({
   selector: 'app-train-station',
   standalone: true,
   imports: [
-    TableComponent
+    TableComponent,
+    AutoCompletionComponent
   ],
   templateUrl: './train-station.component.html',
   styleUrl: './train-station.component.css'
@@ -19,9 +21,7 @@ export class TrainStationComponent implements OnInit{
   public tableHeaders: string[] = ['Station', 'WLAN', 'Parkplatz', 'barrierefrei', 'Fahrstuhl', 'Adresse']
   public tableData: string[][] = [];
 
-  private isTableRefreshActive: boolean = false;
-
-  constructor(protected apiService: ApiService, private router: Router, private dataVerifier: DataVerifierService) {
+  constructor(protected apiService: ApiService, private router: Router, protected dataVerifier: DataVerifierService) {
     this.apiService.isLoading = true;
 
     if (this.dataVerifier.stations.length === 0) {

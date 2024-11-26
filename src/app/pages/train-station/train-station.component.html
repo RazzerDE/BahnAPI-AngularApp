@@ -32,11 +32,15 @@
         </div>
 
         <!-- Search-Input -->
-        <input id="searchStation" class="mt-0 h-10 w-72 pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0
-        rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600
-        dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:outline-none
-        focus:shadow-outline-purple form-input" type="text" placeholder="Bahnhof suchen" aria-label="Search"
-        (keyup.enter)="changeTrainStation()">
+        <input id="searchStation" #searchStation class="mt-0 h-10 w-72 pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600
+            bg-gray-100 border-0 rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600
+            dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:outline-none
+            focus:shadow-outline-purple form-input" type="text" placeholder="Bahnhof suchen" aria-label="Search"
+               (keyup.enter)="changeTrainStation();" (input)="dataVerifier.toggleAutoCompletionMenu(searchStation);"
+               [value]="dataVerifier.completion_name ? dataVerifier.completion_name : ''" autocomplete="off">
+
+        <!-- Auto completion Menu -->
+        <app-auto-completion [input_field]="searchStation"></app-auto-completion>
       </div>
     </div>
   </div>

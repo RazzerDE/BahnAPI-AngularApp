@@ -4,8 +4,9 @@ import {NgClass} from "@angular/common";
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {TableComponent} from "../../util/table/table.component";
 import {ApiService} from "../../services/api-service/api.service";
-import {Departure, Schedule} from "../../services/api-service/types/timetables";
+import {Arrival, Departure, Schedule} from "../../services/api-service/types/timetables";
 import {DataVerifierService} from "../../services/data-verifier/data-verifier.service";
+import {AutoCompletionComponent} from "../../util/auto-completion/auto-completion.component";
 
 @Component({
   selector: 'app-start-main',
@@ -14,7 +15,8 @@ import {DataVerifierService} from "../../services/data-verifier/data-verifier.se
     NgClass,
     ReactiveFormsModule,
     TableComponent,
-    FormsModule
+    FormsModule,
+    AutoCompletionComponent
   ],
   templateUrl: './start-main.component.html',
   styleUrl: './start-main.component.css'
@@ -42,7 +44,7 @@ export class StartMainComponent implements OnInit {
   protected end_station_name: string = '';
   protected start_station_name: string = 'Magdeburg Hbf';
 
-  constructor(private apiService: ApiService, private router: Router, private dataVerifier: DataVerifierService) {
+  constructor(private apiService: ApiService, private router: Router, protected dataVerifier: DataVerifierService) {
     // update table
     this.apiService.isLoading = true;
     this.apiService.getTimetableData(this.start_station_name, this.date_splitted[0], this.date_splitted[1].split(':')[0]);
@@ -168,11 +170,11 @@ export class StartMainComponent implements OnInit {
     this.dataVerifier.toggleErrorAlert();
     this.tableData = this.dataVerifier.station_stops!.s
       .filter((train: Schedule) => {
-        const time: Departure | undefined = this.showArrivalTime ? train.ar : train.dp;
+        const time: Departure | Arrival | undefined = this.showArrivalTime ? train.ar : train.dp;
         return time && (parseInt(time!.pt.slice(-4)) >= parseInt(this.currentTimeHours.replace(':', '')));
       })
       .map((train: Schedule): string[] => {
-        const time = this.showArrivalTime ? train.ar : train.dp;
+        const time: Departure | Arrival | undefined = this.showArrivalTime ? train.ar : train.dp;
         return [
           this.dataVerifier.formatTime(time!.pt),
           time!.pp,

@@ -55,6 +55,7 @@ export class ApiService {
 
         this.dataVerifier.current_station = data.station;
         localStorage.setItem('current_station', JSON.stringify(this.dataVerifier.current_station));
+        this.dataVerifier.updateStationList(data.station.name);
 
         // set default values for date and hour if they are not provided
         date = date || new Date().toISOString().slice(2, 10).replace(/-/g, '');
@@ -69,6 +70,7 @@ export class ApiService {
                     return this.dataVerifier.toggleErrorAlert('invalid_station_end');  // end_station doesn't exist
                   }
 
+                  this.dataVerifier.updateStationList(data_end.station.name);
                   this.dataVerifier.toggleErrorAlert(); // remove error alert if it exists
                   this.dataVerifier.station_stops = { ...data, s: this.dataVerifier.filterDirectRoutes(data, end_station_name, show_arrival) };
                 }, error: (error): void => {
@@ -104,6 +106,7 @@ export class ApiService {
       next: (data: StationDataResponse): void => {
         this.dataVerifier.stations = data.result;
         localStorage.setItem('stations', JSON.stringify(this.dataVerifier.stations));
+        this.dataVerifier.updateStationList(data.result);
       }, error: (error): void => {
         if (error.status == 401) { this.isInvalidKey.next(true); }  // invalid api key provided
         console.error(error);
@@ -121,6 +124,7 @@ export class ApiService {
       next: (data: StationDataResponse): void => {
         this.dataVerifier.stations = data.result;
         localStorage.setItem('stations', JSON.stringify(this.dataVerifier.stations));
+        this.dataVerifier.updateStationList(data.result);
       }, error: (error): void => {
         // station not found
         if (error.status == 404) {
