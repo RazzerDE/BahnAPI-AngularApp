@@ -64,14 +64,16 @@ export class DataVerifierService {
    *
    * @param timetable - The fetched timetable data.
    * @param destinationStation - The name of the destination train station.
+   * @param show_arrival - A boolean value that determines whether to show arrival times.
    * @returns An array of schedules that have direct routes to the destination station.
    */
-  filterDirectRoutes(timetable: Timetable, destinationStation: string): Schedule[] {
+  filterDirectRoutes(timetable: Timetable, destinationStation: string, show_arrival?: boolean): Schedule[] {
     const normalizedDestination = this.normalizeStationName(destinationStation);
     // Normalize the name of the stations because of different naming conventions of the BahnAPI
     return timetable.s.filter((schedule: Schedule) => {
-      if (schedule.dp && schedule.dp.ppth) {
-        const plannedPath: string[] = schedule.dp.ppth.split('|');
+      const path: string | undefined = show_arrival ? schedule.ar?.ppth : schedule.dp?.ppth;
+      if (path) {
+        const plannedPath: string[] = path.split('|');
         return plannedPath.some(station => this.normalizeStationName(station) === normalizedDestination);
       }
       return false;

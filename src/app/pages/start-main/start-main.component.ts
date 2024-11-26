@@ -4,7 +4,7 @@ import {NgClass} from "@angular/common";
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {TableComponent} from "../../util/table/table.component";
 import {ApiService} from "../../services/api-service/api.service";
-import {Schedule} from "../../services/api-service/types/timetables";
+import {Departure, Schedule} from "../../services/api-service/types/timetables";
 import {DataVerifierService} from "../../services/data-verifier/data-verifier.service";
 
 @Component({
@@ -28,6 +28,7 @@ export class StartMainComponent implements OnInit {
 
   protected changedTime: boolean = false;
   protected showRoutePlaning: boolean = false;
+  protected showArrivalTime: boolean = false;
   protected readonly document: Document = document;
 
   protected tableHeader: string[] = ['Uhrzeit (Gepl. Abfahrt)', 'Gleis', 'Zugname', 'Zugart', 'Von Bahnhof', 'Nach Zielbahnhof'];
@@ -128,6 +129,22 @@ export class StartMainComponent implements OnInit {
   }
 
   /**
+   * Updates the table header based on the value of `showArrivalTime`.
+   */
+   protected changeTableHeader(): void {
+    if (this.showArrivalTime) {
+      this.tableHeader[0] = 'Uhrzeit (Gepl. Ankunft)';
+    } else {
+      this.tableHeader[0] = 'Uhrzeit (Gepl. Abfahrt)';
+    }
+
+    this.apiService.isLoading = true;
+    this.apiService.getTimetableData(this.start_station_name, this.date_splitted[0], this.date_splitted[1].split(':')[0],
+      this.end_station_name ? this.end_station_name : undefined, true);
+    setTimeout(() => {this.mapStationsToTableData(); }, 2000);
+  }
+
+  /**
    * Maps the station stops data to the table data format.
    * Updates the table data and handles error alerts if no train is found.
    */
@@ -150,15 +167,19 @@ export class StartMainComponent implements OnInit {
 
     this.dataVerifier.toggleErrorAlert();
     this.tableData = this.dataVerifier.station_stops!.s
-      .filter((train: Schedule) => train.dp && (parseInt(train.dp!.pt.slice(-4)) >= parseInt(this.currentTimeHours.replace(':', ''))))
+      .filter((train: Schedule) => {
+        const time: Departure | undefined = this.showArrivalTime ? train.ar : train.dp;
+        return time && (parseInt(time!.pt.slice(-4)) >= parseInt(this.currentTimeHours.replace(':', '')));
+      })
       .map((train: Schedule): string[] => {
+        const time = this.showArrivalTime ? train.ar : train.dp;
         return [
-          this.dataVerifier.formatTime(train.dp!.pt),
-          train.dp!.pp,
+          this.dataVerifier.formatTime(time!.pt),
+          time!.pp,
           train.tl.c + ' ' + train.tl.n,
           train.tl.c,
           this.start_station_name,
-          this.end_station_name ? this.end_station_name : train.dp!.ppth.split('|').pop() || ''
+          this.end_station_name ? this.end_station_name : time!.ppth.split('|').pop() || ''
         ];
       }).sort((a: string[], b: string[]): number => a[0].localeCompare(b[0]));
 

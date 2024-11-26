@@ -42,8 +42,10 @@ export class ApiService {
    * @param date - The date in the format YYMMDD (example: 241120).
    * @param hour - The hour in the format HH (example: 21).
    * @param end_station_name - The name of the destination station.
+   * @param show_arrival - A boolean value that determines whether to show arrival times.
    */
-  getTimetableData(station_name: string, date?: string, hour?: string, end_station_name?: string): void {
+  getTimetableData(station_name: string, date?: string, hour?: string, end_station_name?: string,
+                   show_arrival?: boolean): void {
     this.fetchStation(station_name).subscribe({
       next: (data: Stations | string): void => {
         if (data === null || typeof data === 'string') {
@@ -68,7 +70,7 @@ export class ApiService {
                   }
 
                   this.dataVerifier.toggleErrorAlert(); // remove error alert if it exists
-                  this.dataVerifier.station_stops = { ...data, s: this.dataVerifier.filterDirectRoutes(data, end_station_name) };
+                  this.dataVerifier.station_stops = { ...data, s: this.dataVerifier.filterDirectRoutes(data, end_station_name, show_arrival) };
                 }, error: (error): void => {
                   console.error(error);
                 }
