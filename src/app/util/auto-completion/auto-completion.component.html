@@ -1,0 +1,13 @@
+<div id="autoCompletionMenu" #autoCompletionMenu class="z-20 absolute hidden bg-gray-50 divide-y
+                                                      divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 mt-1">
+  <div class="relative z-10">
+    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button">
+      @for (station_name of dataVerifier.filtered_station_names; track station_name) {
+        <li>
+          <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600
+        dark:hover:text-white" (click)="updateStationValue(station_name)">{{ station_name }}</button>
+        </li>
+      }
+    </ul>
+  </div>
+</div>
