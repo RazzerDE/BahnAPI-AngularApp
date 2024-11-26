@@ -20,7 +20,7 @@ import {DataVerifierService} from "../services/data-verifier/data-verifier.servi
 export class SidebarComponent {
   constructor(protected sidebarService: SidebarMobileService, private dataVerifier: DataVerifierService) {}
 
-  protected clearCache(): void {
+  clearCache(): void {
     this.dataVerifier.stations = [];
     this.dataVerifier.elevators = [];
     this.dataVerifier.current_station = undefined;
