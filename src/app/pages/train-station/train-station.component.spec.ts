@@ -1,14 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TrainStationComponent } from './train-station.component';
 import { ApiService } from '../../services/api-service/api.service';
-import {Elevator} from "../../services/api-service/types/elevators";
-import {StationData} from "../../services/api-service/types/station-data";
-import {BehaviorSubject} from "rxjs";
+import { Elevator } from "../../services/api-service/types/elevators";
+import { StationData } from "../../services/api-service/types/station-data";
+import { BehaviorSubject } from "rxjs";
+import { DataVerifierService } from "../../services/data-verifier/data-verifier.service";
+import {NavigationEnd} from "@angular/router";
 
 describe('TrainStationComponent', () => {
   let component: TrainStationComponent;
   let fixture: ComponentFixture<TrainStationComponent>;
   let apiService: ApiService;
+  let dataVerifier: DataVerifierService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -26,12 +29,22 @@ describe('TrainStationComponent', () => {
             getDataByStation: jest.fn(),
           },
         },
+        {
+          provide: DataVerifierService,
+          useValue: {
+            stations: [],
+            elevators: [],
+            current_station: undefined,
+            toggleErrorAlert: jest.fn(),
+          }
+        }
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TrainStationComponent);
     component = fixture.componentInstance;
     apiService = TestBed.inject(ApiService);
+    dataVerifier = TestBed.inject(DataVerifierService);
     fixture.detectChanges();
   });
 
@@ -64,19 +77,19 @@ describe('TrainStationComponent', () => {
   it('should call getDataByStation if input is valid and not cached', () => {
     const org_body: string = document.body.innerHTML;
     document.body.innerHTML = '<input id="searchStation" value="Berlin Hbf">';
-    apiService.stations = [{name: 'Berlin Hbf', hasWiFi: true, hasParking: true, hasSteplessAccess: true,
+    dataVerifier.stations = [{name: 'Berlin Hbf', hasWiFi: true, hasParking: true, hasSteplessAccess: true,
       mailingAddress: {street: 'Street', city: 'City', zipcode: '39126'}, number: 1}] as unknown as StationData[];
 
     component.changeTrainStation();
-    expect(apiService.stations.length).toEqual(1);
+    expect(dataVerifier.stations.length).toEqual(1);
 
     document.body.innerHTML = org_body;
   });
 
   it('should generate table data if stations are available', () => {
-    apiService.stations = [{name: 'Berlin Hbf', hasWiFi: true, hasParking: true, hasSteplessAccess: true,
+    dataVerifier.stations = [{name: 'Berlin Hbf', hasWiFi: true, hasParking: true, hasSteplessAccess: true,
       mailingAddress: {street: 'Street', city: 'City', zipcode: '39126'}, number: 1},] as unknown as StationData[];
-    apiService.elevators = [{ stationnumber: 1 }] as Elevator[];
+    dataVerifier.elevators = [{ stationnumber: 1 }] as Elevator[];
 
     component.generateStationsTable();
     expect(component.tableData.length).toBe(1);
@@ -91,9 +104,9 @@ describe('TrainStationComponent', () => {
   });
 
   it('should map stations to table data correctly', () => {
-    apiService.stations = [{name: 'Berlin Hbf', hasWiFi: true, hasParking: true, hasSteplessAccess: true,
+    dataVerifier.stations = [{name: 'Berlin Hbf', hasWiFi: true, hasParking: true, hasSteplessAccess: true,
       mailingAddress: {street: 'Street', city: 'City', zipcode: '39126'}, number: 1},] as unknown as StationData[];
-    apiService.elevators = [{ stationnumber: 1 }] as Elevator[];
+    dataVerifier.elevators = [{ stationnumber: 1 }] as Elevator[];
 
     (component as any).mapStationsToTableData();
     expect(component.tableData.length).toBe(1);
@@ -101,11 +114,11 @@ describe('TrainStationComponent', () => {
   });
 
   it('should sort stations alphabetically by name', () => {
-    apiService.stations = [
+    dataVerifier.stations = [
       { name: 'Berlin Hbf', hasWiFi: true, hasParking: true, hasSteplessAccess: true, mailingAddress: { street: 'Street', city: 'City', zipcode: '39126' }, number: 1 },
       { name: 'Aachen Hbf', hasWiFi: true, hasParking: true, hasSteplessAccess: true, mailingAddress: { street: 'Street', city: 'City', zipcode: '52062' }, number: 2 }
     ] as unknown as StationData[];
-    apiService.elevators = [{ stationnumber: 1 }, { stationnumber: 2 }] as Elevator[];
+    dataVerifier.elevators = [{ stationnumber: 1 }, { stationnumber: 2 }] as Elevator[];
 
     component.generateStationsTable();
     expect(component.tableData[0][0]).toBe('Aachen Hbf');
@@ -113,7 +126,7 @@ describe('TrainStationComponent', () => {
   });
 
   it('should map stations to table data correctly', () => {
-    apiService.stations = [{
+    dataVerifier.stations = [{
       name: 'Berlin Hbf',
       hasWiFi: true,
       hasParking: true,
@@ -121,7 +134,7 @@ describe('TrainStationComponent', () => {
       mailingAddress: { street: 'Street', city: 'City', zipcode: '39126' },
       number: 1
     }] as unknown as StationData[];
-    apiService.elevators = [{ stationnumber: 1 }] as Elevator[];
+    dataVerifier.elevators = [{ stationnumber: 1 }] as Elevator[];
 
     (component as any).mapStationsToTableData();
     expect(component.tableData.length).toBe(1);
@@ -136,7 +149,7 @@ describe('TrainStationComponent', () => {
   });
 
   it('should map stations to table data correctly with false values', () => {
-    apiService.stations = [{
+    dataVerifier.stations = [{
       name: 'Berlin Hbf',
       hasWiFi: false,
       hasParking: false,
@@ -144,7 +157,7 @@ describe('TrainStationComponent', () => {
       mailingAddress: { street: 'Street', city: 'City', zipcode: '39126' },
       number: 1
     }] as unknown as StationData[];
-    apiService.elevators = [{ stationnumber: 2 }] as Elevator[]; // No elevator for this station
+    dataVerifier.elevators = [{ stationnumber: 2 }] as Elevator[]; // No elevator for this station
 
     (component as any).mapStationsToTableData();
     expect(component.tableData.length).toBe(1);
@@ -158,4 +171,9 @@ describe('TrainStationComponent', () => {
     ]);
   });
 
+  it('should set isLoading to true on NavigationEnd event', () => {
+    const navigationEnd = new NavigationEnd(0, 'http://localhost:4200/', 'http://localhost:4200/');
+    (component as any).router.events.next(navigationEnd);
+    expect(apiService.isLoading).toBe(true);
+  });
 });
