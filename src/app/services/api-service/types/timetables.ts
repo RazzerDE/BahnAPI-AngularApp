@@ -1,34 +1,34 @@
 export interface Timetable {
-  station: string; // Station name.
-  s: Schedule[]; // List of TimetableStop.
+  station: string; // Name der Station.
+  s: Schedule[]; // Liste von allen Zugstopps.
 }
 
 export interface Schedule {
-  id: string; // An id that uniquely identifies the stop.
-  tl: TrainLine; // It's a compound data type that contains common data items that characterize a Trip.
-  ar?: Arrival; // An event (arrival or departure) that is part of a stop.
-  dp?: Departure; // An event (arrival or departure) that is part of a stop.
+  id: string; // Einzigartige ID des Zug-Stops.
+  tl: TrainLine; // Ein zusammengesetzter Datentyp, der allgemeine Datenobjekte enthält, die eine Fahrt charakterisieren.
+  ar?: Arrival; // Ein Ereignis (Ankunft oder Abfahrt), das Teil eines Halts ist.
+  dp?: Departure; // Ein Ereignis (Ankunft oder Abfahrt), das Teil eines Halts ist.
 }
 
 export interface TrainLine {
-  f: string; // Filter flags
-  t: string; // Trip type
-  o: string; // Owner. A unique short-form and only intended to map a trip to specific evu.
-  c: string; // Category. Trip category, e.g. "ICE" or "RE".
-  n: string; // Trip/train number, e.g. "4523".
+  f: string; // Filter-Flags
+  t: string; // Fahrt-Typ
+  o: string; // Eigentümer. Eine eindeutige Kurzform, die nur dazu dient, eine Fahrt einem bestimmten EVU zuzuordnen.
+  c: string; // Kategorie. Fahrtkategorie, z.B. "ICE" oder "RE".
+  n: string; // Fahrt-/Zugnummer, z.B. "4523".
 }
 
 export interface Arrival {
-  pt: string; // Planned departure or arrival time. 'YYMMddHHmm' format, e.g. '1404011437' for 14:37 on April the 1st of 2014.
-  pp: string; // Planned plattform
-  l: string; // Line. The line indicator (e.g. "3" for an S-Bahn or "45S" for a bus).
-  tra?: string; // Transition. Trip id of the next or previous train of a shared train.
-  ppth: string; // Planned Path. A sequence of station names separated by the pipe symbols ('|'). The first element is the trip's start station. The current station is never included.
+  pt: string; // Geplante Abfahrts- oder Ankunftszeit. 'YYMMddHHmm' Format, z.B. '1404011437' für 14:37 am 1. April 2014.
+  pp: string; // Geplantes Gleis
+  l: string; // Linie. Die Linienbezeichnung (z.B. "3" für eine S-Bahn oder "45S" für einen Bus).
+  tra?: string; // Übergang. Fahrt-ID des nächsten oder vorherigen Zuges einer gemeinsamen Fahrt.
+  ppth: string; // Geplanter Pfad. Eine Folge von Stationsnamen, getrennt durch Pipe-Symbole ('|'). Die erste Station ist die Startstation der Fahrt. Die aktuelle Station ist nie enthalten.
 }
 
 export interface Departure {
-  pt: string; // Planned departure or arrival time. 'YYMMddHHmm' format, e.g. '1404011437' for 14:37 on April the 1st of 2014.
-  pp: string; // Planned plattform
-  l: string; // Line. The line indicator (e.g. "3" for an S-Bahn or "45S" for a bus).
-  ppth: string; // Planned Path. A sequence of station names separated by the pipe symbols ('|'). The first element is the trip's start station. The current station is never included.
+  pt: string; // Geplante Abfahrts- oder Ankunftszeit. 'YYMMddHHmm' Format, z.B. '1404011437' für 14:37 am 1. April 2014.
+  pp: string; // Geplantes Gleis
+  l: string; // Linie. Die Linienbezeichnung (z.B. "3" für eine S-Bahn oder "45S" für einen Bus).
+  ppth: string; // Geplanter Pfad. Eine Folge von Stationsnamen, getrennt durch Pipe-Symbole ('|'). Die erste Station ist die Startstation der Fahrt. Die aktuelle Station ist nie enthalten.
 }

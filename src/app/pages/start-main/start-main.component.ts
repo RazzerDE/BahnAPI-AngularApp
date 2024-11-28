@@ -45,7 +45,7 @@ export class StartMainComponent implements OnInit {
   protected start_station_name: string = 'Magdeburg Hbf';
 
   constructor(private apiService: ApiService, private router: Router, protected dataVerifier: DataVerifierService) {
-    // update table
+    // Tabelle updaten
     this.apiService.isLoading = true;
     this.apiService.getTimetableData(this.start_station_name, this.date_splitted[0], this.date_splitted[1].split(':')[0]);
     setTimeout(() => {this.mapStationsToTableData(); }, 1000);
@@ -54,57 +54,57 @@ export class StartMainComponent implements OnInit {
   ngOnInit(): void {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        // set loading to true after angular router navigation
+        // Aktiviere den Ladebildschirm, wenn die Seite gewechselt wird
         this.apiService.isLoading = true;
       }
     });
 
     this.trainStationForm.valueChanges.subscribe(value => {
       if (this.showRoutePlaning) {
-        // update start_station_name if route planing is active
+        // start-station_name updaten, wenn RoutePlaning aktiv ist
         this.start_station_name = value;
       }
     });
   }
 
   /**
-   * Displays the timepicker and focuses on the input element for better keyboard navigation.
+   * Zeigt den Zeitpicker an und fokussiert das Eingabeelement für eine bessere Tastaturnavigation.
    */
   protected showTimepicker(): void { setTimeout(() => { this.input_time.nativeElement.focus(); }, 100); }
 
   /**
-   * Toggles the visibility of the timepicker and updates the selected time.
-   * @param close - Optional parameter to indicate if the timepicker should be closed.
+   * Schaltet die Sichtbarkeit des Zeitpickers um und aktualisiert die ausgewählte Zeit.
+   * @param close - Optionaler Parameter, um anzugeben, ob der Zeitpicker geschlossen werden soll.
    */
   protected toggleTimepicker(close?: boolean): void {
     if (close && !this.timepicker.nativeElement.classList.contains('hidden')) {
-      // close timepicker manually if the user closes it with enter key
+      // Zeitpicker manuell schließen, wenn der Benutzer ihn mit der Eingabetaste schließt
       this.timepicker.nativeElement.classList.add('hidden');
       this.selectTimeToggle.nativeElement.click();
       this.changedTime = true;
     }
 
-    // API can only handle the full hour, so we filter later
+    // Die API kann nur die volle Stunde verarbeiten, daher filtern wir später
     this.currentTimeHours = this.input_time.nativeElement.value;
     this.date_splitted[1] = this.currentTimeHours;
   }
 
   /**
-   * Toggles the visibility of the route planning section.
+   * Schaltet die Sichtbarkeit des Routenplanungsabschnitts um.
    */
   protected toggleRoutePlaning(): void {
     this.showRoutePlaning = !this.showRoutePlaning;
   }
 
   /**
-   * Updates the train data based on the selected start and end stations and the selected time.
-   * Makes an API request to fetch the timetable data and updates the table.
+   * Aktualisiert die Zugdaten basierend auf den ausgewählten Start- und Endbahnhöfen und der ausgewählten Zeit.
+   * Führt eine API-Anfrage durch, um die Fahrplandaten abzurufen und die Tabelle zu aktualisieren.
    */
   protected updateTrainData(): void {
     if (this.end_station_name === this.trainStationForm.value && !this.changedTime) { return; }
     if (this.trainStationForm.valid && !this.end_station_name) { this.end_station_name = this.trainStationForm.value; }
 
-    // api request
+    // api abfrage
     this.changedTime = true;
     this.apiService.isLoading = true;
     if (this.end_station_name != this.start_station_name) {
@@ -112,26 +112,26 @@ export class StartMainComponent implements OnInit {
         this.end_station_name);
     } else { return this.mapStationsToTableData(); }
 
-    // update table
+    // Tabelle updaten
     setTimeout(() => {this.mapStationsToTableData(); }, 2000);
   }
 
   /**
-   * Determines if the search button should be disabled.
+   * Bestimmt, ob die Suchschaltfläche deaktiviert sein sollte.
    *
-   * The search button is disabled in the following cases:
-   * - The time has not changed and
-   * - The train station form is empty and
-   * - The route planning section is shown but the end station name is empty.
+   * Die Suchschaltfläche ist in den folgenden Fällen deaktiviert:
+   * - Die Zeit hat sich nicht geändert und
+   * - Das Zugstationsformular ist leer und
+   * - Der Routenplanungsabschnitt wird angezeigt, aber der Name des Endbahnhofs ist leer.
    *
-   * @returns {boolean} - Returns true if the search button should be disabled, false otherwise.
+   * @returns {boolean} - Gibt true zurück, wenn die Suchschaltfläche deaktiviert sein sollte, andernfalls false.
    */
   protected isSearchBtnDisabled(): boolean {
     return !this.changedTime && this.trainStationForm.value === '' && (!this.showRoutePlaning || this.end_station_name === '');
   }
 
   /**
-   * Updates the table header based on the value of `showArrivalTime`.
+   * Aktualisiert die Tabellenüberschrift basierend auf dem Wert von `showArrivalTime`.
    */
    protected changeTableHeader(): void {
     if (this.showArrivalTime) {
@@ -147,13 +147,13 @@ export class StartMainComponent implements OnInit {
   }
 
   /**
-   * Maps the station stops data to the table data format.
-   * Updates the table data and handles error alerts if no train is found.
+   * Ordnet die Stationsstopps-Daten dem Tabellenformat zu.
+   * Aktualisiert die Tabellendaten und behandelt Fehlerwarnungen, wenn kein Zug gefunden wird.
    */
   private mapStationsToTableData(): void {
     this.apiService.isLoading = false;
 
-    // no train found
+    // kein zug gefunden
     if (!this.dataVerifier.station_stops || this.dataVerifier.station_stops.s.length === 0 ||
         this.end_station_name === this.start_station_name) {
       this.tableData = [];

@@ -18,7 +18,8 @@ import {DataVerifierService} from "../services/data-verifier/data-verifier.servi
   styleUrl: './sidebar.component.css'
 })
 export class SidebarComponent {
-  constructor(protected sidebarService: SidebarMobileService, private dataVerifier: DataVerifierService) {}
+  constructor(protected sidebarService: SidebarMobileService, private dataVerifier: DataVerifierService) {
+  }
 
   protected clearCache(): void {
     this.dataVerifier.stations = [];
@@ -28,7 +29,7 @@ export class SidebarComponent {
   }
 
   /**
-   * Listens for the 'Escape' key press event and closes the mobile menu if it is open.
+   * Hört auf das Drücken der 'Escape'-Taste und schließt das mobile Menü, wenn es geöffnet ist.
    */
   @HostListener('document:keydown.escape')
   closeMobileMenu(): void {

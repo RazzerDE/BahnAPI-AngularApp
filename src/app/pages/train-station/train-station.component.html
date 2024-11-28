@@ -1,9 +1,9 @@
 <div class="dark:text-white">
 
-  <!-- Title of the Page -->
+  <!-- Titel der Seite-->
   <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">Detailierte Ansicht von Bahnhöfen</h2>
 
-  <!-- Description of the Page -->
+  <!-- Beschreibung der Seite -->
     <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
       <p class="text-sm text-gray-600 dark:text-gray-400">
         Diese Seite bietet eine detaillierte Ansicht der Bahnhöfe, einschließlich ihrer Adressen, Parkplatz,
@@ -11,13 +11,13 @@
       </p>
     </div>
 
-  <!-- Current Train-Station indicator & Searchbar -->
+  <!-- Aktueller Bahnhof & Suchfunktion -->
   <div class="grid grid-cols-2 gap-4 mt-11 mb-0 items-center">
 
-    <!-- Current Train-Station indicator -->
+    <!-- Aktuell gewählter Bahnhof -->
     <h3 class="text-lg font-semibold mb-2">Aktueller Bahnhof: <span class="text-red-700">{{currentTrainStation}}</span></h3>
 
-    <!-- Searchbar -->
+    <!-- Suchleiste -->
     <div class="flex justify-center flex-1 justify-self-end h-10 mb-2">
       <div class="relative self-center mr-5 hidden" id="error_trainstation">
         <span class="text-red-700">Kein Bahnhof gefunden.</span>
@@ -25,13 +25,13 @@
       <div class="relative focus-within:text-red-500">
         <div class="absolute inset-y-0 flex items-center pl-2">
 
-          <!-- Search-Icon -->
+          <!-- Suchfeld-Icon -->
           <svg class="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
           </svg>
         </div>
 
-        <!-- Search-Input -->
+        <!-- Suchfeld-Input -->
         <input id="searchStation" #searchStation class="mt-0 h-10 w-72 pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600
             bg-gray-100 border-0 rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600
             dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:outline-none
@@ -39,12 +39,12 @@
                (keyup.enter)="changeTrainStation();" (input)="dataVerifier.toggleAutoCompletionMenu(searchStation);"
                [value]="dataVerifier.completion_name ? dataVerifier.completion_name : ''" autocomplete="off">
 
-        <!-- Auto completion Menu -->
+        <!-- Auto-Vervollständigung -->
         <app-auto-completion [input_field]="searchStation"></app-auto-completion>
       </div>
     </div>
   </div>
 
-  <!-- Table -->
+  <!-- Tabelle -->
   <app-table [columns]=tableHeaders [rows]=tableData></app-table>
 </div>

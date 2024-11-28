@@ -1,17 +1,17 @@
 export interface StationDataResponse {
-  offset: number; // offset of the first result object with respect to the total number of hits produced by the query
-  limit: number; // maximum number of result objects to be returned
-  total: number; // total number of hits produced by that query
-  result: StationData[]; // result objects produced by that query
+  offset: number; // Offset des ersten Ergebnisobjekts in Bezug auf die Gesamtanzahl der Treffer, die durch die Abfrage erzeugt wurden
+  limit: number; // Maximale Anzahl der zurückzugebenden Ergebnisobjekte
+  total: number; // Gesamtanzahl der Treffer, die durch die Abfrage erzeugt wurden
+  result: StationData[]; // Ergebnisobjekte, die durch die Abfrage erzeugt wurden
 }
 
 export interface StationData {
-  number: number; // unique identifier representing a specific railway station
-  ifopt: string; // the stations IFOPT number (idk what that is)
+  number: number; // Einzigartige ID, repräsentiert einen spezifischen Bahnhof
+  ifopt: string; // Station's IFOPT Nummer (keine Ahnung was das ist)
   name: string;
   mailingAddress: MailingAddress;
-  category: number; // Stations with category -1 or 0 are not in production, e.g. planned, saled, without train stops.
-  priceCategory: number; // the price for train stops at a specific station (1..7)
+  category: number; // Stationen mit den Kategorien -1 oder 0 sind nicht aktiv, z.B. geplant, verkauft, ohne Zugstopps.
+  priceCategory: number; // Der Preis für Zughalte an einer spezifischen Station (1..7)
   hasParking: boolean;
   hasBicycleParking: boolean;
   hasLocalPublicTransport: boolean;

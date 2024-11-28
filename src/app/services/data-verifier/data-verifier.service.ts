@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Schedule, Timetable} from "../api-service/types/timetables";
 import {Parser} from "xml2js";
 import {Station} from "../api-service/types/stations";
@@ -9,13 +9,13 @@ import {Elevator} from "../api-service/types/elevators";
   providedIn: 'root'
 })
 export class DataVerifierService {
-  // used for the autocompletion feature at input fields
+  // wird genutzt um die Autovervollständigung bei Input-Feldern zu zeigen
   station_names: string[] = [];
   filtered_station_names: string[] = [];
   completion_name: string = '';
   completion_name_end: string = '';
 
-  // used to store the current station and the station stops
+  // Aktuelle API-Daten (Stationen, Fahrpläne, Aufzüge)
   current_station: Station | undefined;
   station_stops: Timetable | undefined;
   stations: StationData[] = [];
@@ -24,10 +24,10 @@ export class DataVerifierService {
   private parser: Parser = new Parser({explicitArray: false, trim: true, explicitRoot: false, mergeAttrs: true});
 
   /**
-   * Converts an XML string to a JSON object - is used to parse the XML response from the API.
+   * Konvertiert einen XML-String in ein JSON-Objekt - wird verwendet, um die XML-Antwort der API zu parsen.
    *
-   * @param xml - The XML string to be converted.
-   * @returns A promise that resolves to the JSON representation of the XML string.
+   * @param xml - Der zu konvertierende XML-String.
+   * @returns Ein Promise, das die JSON-Darstellung des XML-Strings zurückgibt.
    */
   xmlToJson(xml: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -42,8 +42,8 @@ export class DataVerifierService {
   }
 
   /**
-   * Updates the cache by retrieving stored data from localStorage.
-   * If data is found, it updates the corresponding properties in the service.
+   * Aktualisiert den Cache, indem gespeicherte Daten aus dem localStorage abgerufen werden.
+   * Wenn Daten gefunden werden, werden die entsprechenden Eigenschaften im Service aktualisiert.
    */
   updateCache(): void {
     const temp_stations: string | null = localStorage.getItem('stations');
@@ -63,22 +63,25 @@ export class DataVerifierService {
     }
 
     if (temp_current_station) {
-      if (this.current_station === undefined) { localStorage.removeItem('current_station'); return; }
+      if (this.current_station === undefined) {
+        localStorage.removeItem('current_station');
+        return;
+      }
       this.current_station = JSON.parse(localStorage.getItem('current_station') || '');
     }
   }
 
   /**
-   * Filters the timetable data to find direct routes to the specified destination station.
+   * Filtert die Fahrplandaten, um direkte Verbindungen zur angegebenen Zielstation zu finden.
    *
-   * @param timetable - The fetched timetable data.
-   * @param destinationStation - The name of the destination train station.
-   * @param show_arrival - A boolean value that determines whether to show arrival times.
-   * @returns An array of schedules that have direct routes to the destination station.
+   * @param timetable - Die abgerufenen Fahrplandaten.
+   * @param destinationStation - Der Name der Zielbahnhofstation.
+   * @param show_arrival - Ein boolescher Wert, der bestimmt, ob Ankunftszeiten angezeigt werden sollen.
+   * @returns Ein Array von Fahrplänen, die direkte Verbindungen zur Zielstation haben.
    */
   filterDirectRoutes(timetable: Timetable, destinationStation: string, show_arrival?: boolean): Schedule[] {
     const normalizedDestination: string = this.normalizeStationName(destinationStation);
-    // Normalize the name of the stations because of different naming conventions of the BahnAPI
+    // Normalisiert die Namen der Stationen aufgrund unterschiedlicher Namenskonventionen der BahnAPI
     return timetable.s.filter((schedule: Schedule) => {
       const path: string | undefined = show_arrival ? schedule.ar?.ppth : schedule.dp?.ppth;
       if (path) {
@@ -90,10 +93,10 @@ export class DataVerifierService {
   }
 
   /**
-   * Normalizes a station name by converting it to lowercase and removing spaces and hyphens.
+   * Normalisiert einen Stationsnamen, indem er in Kleinbuchstaben umgewandelt und Leerzeichen sowie Bindestriche entfernt werden.
    *
-   * @param stationName - The name of the station to normalize.
-   * @returns The normalized station name.
+   * @param stationName - Der Name der Station, die normalisiert werden soll.
+   * @returns Der normalisierte Stationsname.
    */
   normalizeStationName(stationName: string): string {
     return stationName.toLowerCase().replace(/[\s-]/g, '');
@@ -101,28 +104,32 @@ export class DataVerifierService {
 
 
   /**
-   * Toggles the visibility of the error alert box based on the provided error type.
+   * Schaltet die Sichtbarkeit des Fehlerwarnfelds basierend auf dem angegebenen Fehlertyp um.
    *
-   * @param error_type - The type of error to display. Can be one of the following:
-   *   - 'invalid_station_end': The end station is invalid.
-   *   - 'invalid_station_start': The start station is invalid.
-   *   - 'same_station': The start and end stations are the same.
-   *   - 'no_stations': No direct routes found for the specified stations.
-   *   If no error type is provided, the alert box will be hidden.
+   * @param error_type - Der anzuzeigende Fehlertyp. Kann einer der folgenden sein:
+   *   - 'invalid_station_end': Die Endstation ist ungültig.
+   *   - 'invalid_station_start': Die Startstation ist ungültig.
+   *   - 'same_station': Die Start- und Endstation sind gleich.
+   *   - 'no_stations': Keine direkten Verbindungen für die angegebenen Stationen gefunden.
+   *   Wenn kein Fehlertyp angegeben wird, wird das Warnfeld ausgeblendet.
    */
   toggleErrorAlert(error_type?: 'invalid_station_end' | 'invalid_station_start' | 'same_station' | 'no_stations'): void {
     const alert_box: HTMLDivElement = document.getElementById('invalidAlert') as HTMLDivElement;
     const alert_title: HTMLHeadingElement = document.getElementById('alert_title') as HTMLHeadingElement;
     const alert_info: HTMLSpanElement = document.getElementById('alert_info') as HTMLSpanElement;
-    if (!alert_box || !alert_title || !alert_info) { return; }
+    if (!alert_box || !alert_title || !alert_info) {
+      return;
+    }
 
-    if (!error_type) { // Hide the alert box
+    if (!error_type) { // Alert-Box verstecken
       alert_box.classList.add('hidden');
       return;
     }
 
-    // check if an error is already shown
-    if (!alert_box.classList.contains('hidden')) { return; }
+    // überprüfe, ob ein Fehler bereits angezeigt wird
+    if (!alert_box.classList.contains('hidden')) {
+      return;
+    }
 
     if (error_type === 'same_station') {
       alert_title.innerText = 'Ungültige Stationen';
@@ -137,32 +144,34 @@ export class DataVerifierService {
                               Achte auf Bindestriche, Groß- und Kleinschreibung und Leerzeichen!`;
     }
 
-    if (alert_box.classList.contains('hidden')) { // Show the alert box
+    if (alert_box.classList.contains('hidden')) { // Alert-box anzeigen
       alert_box.classList.remove('hidden');
     }
   }
 
   /**
-   * Formats the given time string to "HH:MM" format.
-   * @param pt - The time string in the format "YYYYMMDDHHMM".
-   * @returns The formatted time string.
+   * Formatiert die angegebene Zeitzeichenkette in das Format "HH:MM".
+   * @param pt - Die Zeitzeichenkette im Format "YYYYMMDDHHMM".
+   * @returns Die formatierte Zeitzeichenkette.
    */
   formatTime(pt: string): string {
     return `${pt.slice(6, 8)}:${pt.slice(8, 10)}`;
   }
 
   /**
-   * Toggles the visibility of the auto-completion menu.
-   * If the menu is currently hidden, it will be shown if there are cached station names.
-   * If the menu is currently visible, it will be hidden.
+   * Schaltet die Sichtbarkeit des Auto-Vervollständigungsmenüs um.
+   * Wenn das Menü derzeit ausgeblendet ist, wird es angezeigt, wenn zwischengespeicherte Stationsnamen vorhanden sind.
+   * Wenn das Menü derzeit sichtbar ist, wird es ausgeblendet.
    */
   toggleAutoCompletionMenu(input: HTMLInputElement): void {
     const autoCompletionMenu: HTMLDivElement = document.getElementById('autoCompletionMenu') as HTMLDivElement;
-    if (!autoCompletionMenu) { return; }
+    if (!autoCompletionMenu) {
+      return;
+    }
 
     if (this.station_names.length > 0 && input.value.length > 0 && !this.station_names.includes(input.value)) {
       console.log(this.station_names)
-      // find only entries that start with the input value
+      // zeig nur Einträge an, die mit dem eingegebenen Text beginnen
       this.filtered_station_names = this.station_names.filter((station: string): boolean => station.toLowerCase().startsWith(input.value.toLowerCase()));
       console.log(this.filtered_station_names);
       if (autoCompletionMenu.classList.contains('hidden') && this.filtered_station_names.length > 0) {
@@ -178,11 +187,11 @@ export class DataVerifierService {
   }
 
   /**
-   * Updates the list of station names.
-   * If a single station name is provided, it adds it to the list if it doesn't already exist.
-   * If an array of station data is provided, it replaces the current list with the names from the array.
+   * Aktualisiert die Liste der Stationsnamen.
+   * Wenn ein einzelner Stationsname angegeben wird, fügt er ihn der Liste hinzu, wenn er noch nicht existiert.
+   * Wenn ein Array von Stationsdaten angegeben wird, ersetzt es die aktuelle Liste durch die Namen aus dem Array.
    *
-   * @param station - A single station name or an array of station data.
+   * @param station - Ein einzelner Stationsname oder ein Array von Stationsdaten.
    */
   updateStationList(station: string | StationData[]): void {
     if (typeof station === 'string') {
@@ -191,7 +200,7 @@ export class DataVerifierService {
       }
     }
 
-    // update cache
+    // cache updaten
     localStorage.setItem('station_names', JSON.stringify(this.station_names));
   }
 

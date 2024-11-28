@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -6,20 +6,21 @@ import { Injectable } from '@angular/core';
 export class SidebarMobileService {
   isMobileMenuOpen: boolean = false;
 
-  constructor() {}
+  constructor() {
+  }
 
   /**
-   * Toggles the state of the mobile menu.
-   * If the menu is currently open, it will be closed.
-   * If the menu is currently closed, it will be opened.
+   * Schaltet den Zustand des mobilen Menüs um.
+   * Wenn das Menü derzeit geöffnet ist, wird es geschlossen.
+   * Wenn das Menü derzeit geschlossen ist, wird es geöffnet.
    */
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen
   }
 
   /**
-   * Closes the mobile menu.
-   * Sets the state of the mobile menu to closed.
+   * Schließt das mobile Menü.
+   * Setzt den Zustand des mobilen Menüs auf geschlossen.
    */
   closeMobileMenu(): void {
     if (this.isMobileMenuOpen) {

@@ -18,20 +18,20 @@ export class AutoCompletionComponent {
 
   constructor(protected dataVerifier: DataVerifierService) {}
 
-  /**
-   * Updates the station value when a user selects a station from the auto-completion menu.
-   *
-   * @param station_name - The name of the station selected by the user.
-   */
+/**
+* Aktualisiert den Stationswert, wenn ein Benutzer eine Station aus dem Auto-Vervollständigungsmenü auswählt.
+*
+* @param station_name - Der Name der vom Benutzer ausgewählten Station.
+*/
   protected updateStationValue(station_name: string): void {
     this.dataVerifier.completion_name = station_name;
 
-    // hide the auto-completion menu (user clicked on an entry)
+    // verstecke das auto-completion menu (user hat auf einen Eintrag geklickt)
     if (!this.autoCompletionMenu.nativeElement.classList.contains('hidden')) {
       this.autoCompletionMenu.nativeElement.classList.add('hidden');
     }
 
-    // start api call by simulating an enter key press
+    // starte eine api abfrage durch Simulierung eines Tastendrucks
     if (this.input_field) {
       this.input_field.focus();
       const event: KeyboardEvent = new KeyboardEvent('keyup', {key: 'Enter',  code: 'Enter',  bubbles: true });

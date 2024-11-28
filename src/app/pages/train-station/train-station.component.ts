@@ -39,15 +39,15 @@ export class TrainStationComponent implements OnInit{
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         console.log('Page visited by redirect:', event.urlAfterRedirects);
-        // set loading to true after angular router navigation
+        // Lädt die Daten neu, wenn die Seite durch einen Redirect besucht wird
         this.apiService.isLoading = true;
       }
     });
   }
 
   /**
-   * Changes the current train station based on the value entered in the search input field.
-   * If the input is empty or starts with a space, the function will not update the current train station.
+   * Ändert den aktuellen Bahnhof basierend auf dem im Suchfeld eingegebenen Wert.
+   * Wenn die Eingabe leer ist oder mit einem Leerzeichen beginnt, wird der aktuelle Bahnhof nicht aktualisiert.
    */
   changeTrainStation(): void {
     const searchInput = document.getElementById('searchStation') as HTMLInputElement;
@@ -58,7 +58,7 @@ export class TrainStationComponent implements OnInit{
 
     if (searchInput.value === '' || searchInput.value.startsWith(' ')) {
       this.apiService.getDataFromStations();
-    } else { // check if station is already cached
+    } else { // überprüfe ob die station bereits im Cache liegt
       const searchValue = searchInput.value.toLowerCase();
       const cachedStation = this.dataVerifier.stations.find(station => station.name.toLowerCase() === searchValue);
 
@@ -70,28 +70,28 @@ export class TrainStationComponent implements OnInit{
       }
     }
 
-    // update listed trainstation
+    // update die aktuelle Zugstation
     this.currentTrainStation = 'Lädt..';
     this.apiService.isLoading = true;
     setTimeout(() => {this.mapStationsToTableData(); }, 1000);
   }
 
   /**
-   * Generates the table data for the stations.
+   * Erstellt die Tabellen-Daten mit den Bahnhofsdaten.
    */
   generateStationsTable(): void {
-    if (this.dataVerifier.stations.length === 0) { // make API call to get station data
+    if (this.dataVerifier.stations.length === 0) { // API-Abfrage wenn keine Stationen vorhanden sind
       this.apiService.isLoading = true;
       setTimeout(() => {this.mapStationsToTableData(); }, 2000);
-    } else { // already cached
+    } else { // liegt bereits im Cache
       this.mapStationsToTableData();
     }
   }
 
   /**
-   * Maps the stations data to the table data format.
-   * Each station is represented as an array of strings containing its name, availability of WiFi, parking, stepless access, elevator, and address.
-   * The table data is then sorted alphabetically by station name.
+   * Wandelt die Bahnhofs-Daten in das Tabellen-Datenformat um.
+   * Jeder Bahnhof wird als ein Array von Strings dargestellt, das seinen Namen, die Verfügbarkeit von WLAN, Parkplätzen, barrierefreiem Zugang, Fahrstuhl und Adresse enthält.
+   * Die Tabellendaten werden dann alphabetisch nach Bahnhofsnamen sortiert.
    */
   private mapStationsToTableData(): void {
     if (this.dataVerifier.stations.length === 1) {
@@ -101,7 +101,7 @@ export class TrainStationComponent implements OnInit{
       this.currentTrainStation = "";
       this.apiService.isEmptyResults = true;
 
-      // show error if station could not be found
+      // zeige einen Fehler an, wenn keine Stationen gefunden wurden
       if (this.dataVerifier.stations.length === 0) {
         this.dataVerifier.toggleErrorAlert('no_stations');
         this.apiService.isLoading = false;

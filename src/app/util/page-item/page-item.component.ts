@@ -24,8 +24,8 @@ export class PageItemComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.isLoaded = true; // show animation for sidebar active page
-    }, 50); // Small delay to ensure DOM is ready and animation triggers
+      this.isLoaded = true; // zeige eine animation für die seitenleiste
+    }, 50); // Kleine Verzögerung um sicherzustellen das das DOM bereit ist
   }
 
 }

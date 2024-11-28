@@ -1,8 +1,8 @@
 <div class="overflow-x-auto rounded-lg shadow-xl">
-  <!-- Table -->
+  <!-- Tabelle -->
   <div class="relative">
     <table class="w-full whitespace-no-wrap mt-0 table-fixed">
-      <!-- Table-headers -->
+      <!-- Tablen-Kopf -->
       <thead class="sticky top-0 z-10 bg-gray-200/50 dark:bg-gray-800/40">
       <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 dark:text-gray-400">
         @for (column of columns; track columns; let i = $index) {
@@ -16,7 +16,7 @@
       <table class="w-full whitespace-no-wrap mt-0 table-fixed">
         <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
 
-        <!-- Show if API requests fail -->
+        <!-- Erstelle eine versteckte Fehlerbox für mögliche Probleme -->
         <tr #invalidAlert id='invalidAlert' class="hidden">
           <td [attr.colspan]="columns.length" class="text-center py-5">
             <div class="flex flex-col items-center justify-center">
@@ -28,7 +28,7 @@
           </td>
         </tr>
 
-          <!-- Loader GIF -->
+          <!-- Daten-Lader GIF -->
           @if (this.apiService.isLoading || (rows.length == 0 && !this.apiService.isEmptyResults)) {
             <tr>
               <td [attr.colspan]="columns.length" class="text-center py-5">
@@ -39,7 +39,7 @@
               </td>
             </tr>
         } @else {
-        <!-- Table-rows -->
+        <!-- Tabellen-Einträge -->
           @for (row of rows; track $index) {
             <tr class="text-gray-700 dark:text-gray-400 hover:bg-gray-700/30">
               @for (cell of row; track $index) {
