@@ -51,7 +51,7 @@ describe('SidebarComponent', () => {
   });
 
   it('should clear cache correctly', () => {
-    component.clearCache();
+    (component as any).clearCache();
 
     expect(dataVerifier.stations).toEqual([]);
     expect(dataVerifier.elevators).toEqual([]);
