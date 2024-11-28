@@ -80,7 +80,9 @@ describe('TrainStationComponent', () => {
     dataVerifier.stations = [{name: 'Berlin Hbf', hasWiFi: true, hasParking: true, hasSteplessAccess: true,
       mailingAddress: {street: 'Street', city: 'City', zipcode: '39126'}, number: 1}] as unknown as StationData[];
 
+    jest.useFakeTimers();
     component.changeTrainStation();
+    jest.advanceTimersByTime(1000);
     expect(dataVerifier.stations.length).toEqual(1);
 
     document.body.innerHTML = org_body;
