@@ -1,15 +1,15 @@
-<h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Startseite</h2>
+<h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Welcome!</h2>
 
 <!-- Info Card -->
 <div class="px-4 py-3 mb-3 bg-white rounded-lg shadow-md dark:bg-gray-800">
   <p class="text-sm text-gray-600 dark:text-gray-400">
-    Auf dieser Seite kannst du dir Informationen zu <strong>Abfahrts-& Ankunftszeiten</strong> eines Bahnhofs ausgeben lassen, aber auch <strong>detailiertere Ansichten</strong> erhalten
-    und auch Informationen zu <strong>bestimmten Strecken</strong> abfragen. 🙂<br /><br />
-    <strong>Wichtiger Hinweis zur Nutzung:</strong><br />
-    ❌ - Die BahnAPI gibt <strong><u>KEINE</u></strong> Echtzeitdaten zurück.<br />
-    🚅 - Es werden nur <strong>Direktverbindungen</strong> angezeigt aufgrund von API-Limitierungen.<br />
-    ⏰ - Es kann die Uhrzeit verändert werden, aber <strong><u>NICHT</u></strong> das Datum, aufgrund von API-Limitierungen.<br />
-    ✍ - Die Stationsnamen müssen <strong><u>EXAKT</u></strong> eingegeben werden (Unterstriche, Groß-& Kleinschreibung und Leerzeichen beachten).<br />
+    On this page, you can get information about <strong>departure & arrival times</strong> of a station, but also receive <strong>more detailed views</strong>
+    and query information about <strong>specific routes</strong>. 🙂<br /><br />
+    <strong>Important usage note:</strong><br />
+    ❌ - The BahnAPI does <strong><u>NOT</u></strong> return real-time data.<br />
+    🚅 - Only <strong>direct connections</strong> are displayed due to API limitations.<br />
+    ⏰ - The time can be changed, but <strong><u>NOT</u></strong> the date, due to API limitations.<br />
+    ✍ - The station names must be entered <strong><u>EXACTLY</u></strong> (consider underscores, capitalization, and spaces).<br />
   </p>
 </div>
 
@@ -22,7 +22,7 @@
       <input [formControl]="trainStationForm" #start_station
              class="block w-full !pl-9 mt-1 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-red-400
                     focus:outline-none focus:shadow-outline-red input-box dark:focus:shadow-outline-gray" required
-             [attr.placeholder]="showRoutePlaning ? 'Von Bahnhof..' : 'Zielbahnhof festlegen..'" autocomplete="off"
+             [attr.placeholder]="showRoutePlaning ? 'From Station..' : 'Destination station..'" autocomplete="off"
              (keyup.enter)="updateTrainData()" (input)="dataVerifier.toggleAutoCompletionMenu(start_station);"
              [value]="dataVerifier.completion_name ? dataVerifier.completion_name : (showRoutePlaning ? this.start_station_name : '')">
       <div class="absolute inset-y-0 flex items-center ml-2 pointer-events-none">
@@ -39,7 +39,7 @@
                 transition-all duration-300 ease-out translate-x-0 max-w-2xl" [class.hidden]="!showRoutePlaning">
       <input #end_station class="block !pl-9 mt-1 text-sm text-black dark:text-gray-300
           dark:border-gray-600 dark:bg-gray-700 focus:border-red-400 focus:outline-none focus:shadow-outline-red
-          input-box dark:focus:shadow-outline-gray w-full" placeholder="Nach Bahnhof.."
+          input-box dark:focus:shadow-outline-gray w-full" placeholder="To station.."
              (keyup.enter)="updateTrainData()" [(ngModel)]="this.end_station_name"
              (input)="dataVerifier.toggleAutoCompletionMenu(end_station);"
              [value]="dataVerifier.completion_name_end ? dataVerifier.completion_name_end : ''" autocomplete="off" />
@@ -68,7 +68,7 @@
           S0,91.15,0,203.25z M381.9,203.25c0,98.5-80.2,178.7-178.7,178.7s-178.7-80.2-178.7-178.7s80.2-178.7,178.7-178.7
           S381.9,104.65,381.9,203.25z"/>
       </svg>
-      <span>Suchen</span>
+      <span>Search</span>
     </button>
   </div>
 
@@ -89,7 +89,7 @@
                  5.40973 3.40973 5.71569 3.21799 6.09202C3 6.51984 3 7.07989 3 8.2V17.8C3 18.9201 3 19.4802 3.21799
                  19.908C3.40973 20.2843 3.71569 20.5903 4.09202 20.782C4.51984 21 5.07989 21 6.2 21Z" />
             </svg>
-            <h2 class="-ml-1 pl-1.5 whitespace-nowrap leading-6 font-bold" id="date-pick">Heute, um {{ currentTimeHours }} Uhr</h2>
+            <h2 class="-ml-1 pl-1.5 whitespace-nowrap leading-6 font-bold" id="date-pick">Today, after {{ currentTimeHours }}</h2>
             <svg class="mt-1.5 w-3.5 h-3.5 mx-2" viewBox="0 0 16 16" fill="#dc2626"  fill-rule="evenodd" aria-hidden="true"
                  xmlns="http://www.w3.org/2000/svg" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
               <g transform="rotate(45 1254.793 524.438)">
@@ -97,13 +97,13 @@
               </g>
             </svg>
           </div>
-          <span class="ml-7.5">Filtern nach Uhrzeit</span>
+          <span class="ml-7.5">Filter by time</span>
         </button>
 
         <!-- Dropdown menu -->
         <div id="time-range-container" #timepicker class="max-w-[16rem] mx-auto p-4 rounded-xl
         dark:bg-gray-700 bg-gray-200 hidden z-20">
-          <label for="start_time" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Uhrzeit wählen..</label>
+          <label for="start_time" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pick time..</label>
             <div class="relative">
               <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -127,7 +127,7 @@
             after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all
             dark:border-gray-600 peer-checked:bg-red-600"></div>
             <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-              {{showArrivalTime ? 'Ankunftszeit' : 'Abfahrtszeit'}}
+              {{showArrivalTime ? 'Arrival time' : 'Departure time'}}
             </span>
           </label>
         </div>
@@ -149,7 +149,7 @@
                 C179.265,127.948,165.464,141.901,148.5,141.901z"/>
             </svg>
             <div class="flex items-center min-w-0 flex-grow">
-              <h2 class="-ml-1 pl-1.5 whitespace-nowrap leading-6 font-bold">Route planen</h2>
+              <h2 class="-ml-1 pl-1.5 whitespace-nowrap leading-6 font-bold">Plan a route</h2>
               <svg class="flex-shrink-0 mt-1.5 w-3.5 h-3.5 mx-2" viewBox="0 0 16 16" fill="#dc2626" fill-rule="evenodd" aria-hidden="true"
                    xmlns="http://www.w3.org/2000/svg" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
                 <g transform="rotate(45 1254.793 524.438)">
@@ -158,12 +158,12 @@
               </svg>
             </div>
           </div>
-          <span class="pl-7 ml-0.4 w-52-4">Startbahnhof verändern</span>
+          <span class="pl-7 ml-0.4 w-52-4" style="width: 10.7rem;">Change Startstation</span>
         </div>
       </button>
 
       <!-- Tooltip -->
-      <span class="ml-auto self-center w-5/12 text-right text-gray-600 dark:text-gray-400">Die Angabe des Datums & der Endhaltestelle ist optional.</span>
+      <span class="ml-auto self-center w-5/12 text-right text-gray-600 dark:text-gray-400">The specification of the date & the final stop is optional.</span>
 
     </div>
   </div>

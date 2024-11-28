@@ -20,9 +20,9 @@
         <tr #invalidAlert id='invalidAlert' class="hidden">
           <td [attr.colspan]="columns.length" class="text-center py-5">
             <div class="flex flex-col items-center justify-center">
-              <h2 class="text-red-700" id="alert_title">API-Daten ungültig!</h2>
+              <h2 class="text-red-700" id="alert_title">API-Credentials invalid!</h2>
               <span class="text-sm text-gray-600 dark:text-gray-400" id="alert_info">
-                Überprüfe, ob die API-Daten in der Datei <code>src/app/services/types/environment.ts</code> korrekt sind.
+                Please check if the API-credentials in <code>src/app/services/types/environment.ts</code> are correct.
               </span>
             </div>
           </td>
@@ -34,7 +34,7 @@
               <td [attr.colspan]="columns.length" class="text-center py-5">
                 <div class="flex flex-col items-center justify-center">
                   <img ngSrc="assets/img/page-load.gif" alt="Loading..." height="200" width="200" class="h-24 w-24">
-                  <span class="text-sm text-gray-600 dark:text-gray-400">Lädt..</span>
+                  <span class="text-sm text-gray-600 dark:text-gray-400">Loading..</span>
                 </div>
               </td>
             </tr>
