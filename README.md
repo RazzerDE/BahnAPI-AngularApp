@@ -5,7 +5,7 @@
 <p align="center">
   <i align="center">Learn to work with API-REST Services in Typescript.<br />Developed using Angular with an HTML-Stack.</i>
 
-  ![image](https://i.imgur.com/GFax1ym.png)
+  ![image](https://i.imgur.com/XSOdioD.png)
 
 </p>
 
@@ -38,6 +38,8 @@ It supports following <strong>features</strong>:
   <li>📚 <strong>Simple Caching-System</strong>: Don't make new API requests on page refresh.</li>
   <li>📡 <strong>Table-Data Loader</strong>: While the table data is loading, a endless GIF will be shown.</li>
   <li>📛 <strong>Error-Handling</strong>: Displays errors to the user if something in the API requests fails.</li>
+  <li>✍ <strong>Auto-Completion</strong>: The website saves every station name and suggests them to you.</li>
+  <li>📡 <strong>Unit-Test 100% Coverage</strong>: All code has been thoroughly tested. Viewable with the command <code>jest</code>.</li>
   <br />
   <li>📺 <strong>Responsive Website-Design</strong>: Our website is designed to be responsive on all devices.</li>
   <li>🎨 <strong>Theme-Switcher</strong>: You can switch between light and dark mode on this website.</li>

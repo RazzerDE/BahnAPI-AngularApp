@@ -125,16 +125,16 @@ export class DataVerifierService {
     if (!alert_box.classList.contains('hidden')) { return; }
 
     if (error_type === 'same_station') {
-      alert_title.innerText = 'Ungültige Stationen';
-      alert_info.innerText = 'Die Start-Station kann nicht gleich der Ziel-Station sein.';
+      alert_title.innerText = 'Invalid Stations';
+      alert_info.innerText = 'The start station cannot be the same as the destination station.';
     } else if (error_type === 'no_stations') {
-      alert_title.innerText = 'Keine Züge gefunden';
-      alert_info.innerText = 'Es wurden keine Züge für die angegebene Direktverbindung gefunden.';
+      alert_title.innerText = 'No Trains Found';
+      alert_info.innerText = 'No trains were found for the specified direct connection.';
     } else if (error_type.startsWith('invalid_station')) {
       const stationType: string = error_type === 'invalid_station_start' ? 'Start' : 'End';
-      alert_title.innerText = `Ungültige ${stationType}station`;
-      alert_info.innerText = `Die angegebene ${stationType}station wurde nicht in der API gefunden.
-                              Achte auf Bindestriche, Groß- und Kleinschreibung und Leerzeichen!`;
+      alert_title.innerText = `Invalid ${stationType} Station`;
+      alert_info.innerText = `The specified ${stationType} station was not found in the API.
+                          Pay attention to hyphens, capitalization, and spaces!`;
     }
 
     if (alert_box.classList.contains('hidden')) { // Show the alert box
@@ -161,10 +161,8 @@ export class DataVerifierService {
     if (!autoCompletionMenu) { return; }
 
     if (this.station_names.length > 0 && input.value.length > 0 && !this.station_names.includes(input.value)) {
-      console.log(this.station_names)
       // find only entries that start with the input value
       this.filtered_station_names = this.station_names.filter((station: string): boolean => station.toLowerCase().startsWith(input.value.toLowerCase()));
-      console.log(this.filtered_station_names);
       if (autoCompletionMenu.classList.contains('hidden') && this.filtered_station_names.length > 0) {
         autoCompletionMenu.classList.remove('hidden');
       }

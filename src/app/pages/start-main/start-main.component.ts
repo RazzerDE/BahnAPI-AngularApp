@@ -33,7 +33,7 @@ export class StartMainComponent implements OnInit {
   protected showArrivalTime: boolean = false;
   protected readonly document: Document = document;
 
-  protected tableHeader: string[] = ['Uhrzeit (Gepl. Abfahrt)', 'Gleis', 'Zugname', 'Zugart', 'Von Bahnhof', 'Nach Zielbahnhof'];
+  protected tableHeader: string[] = ['Time (Departure)', 'Platform', 'Train Name', 'Train Type', 'From Station', 'To Station'];
   protected tableData: string[][] = [];
 
   private today: Date = new Date();
@@ -135,9 +135,9 @@ export class StartMainComponent implements OnInit {
    */
    protected changeTableHeader(): void {
     if (this.showArrivalTime) {
-      this.tableHeader[0] = 'Uhrzeit (Gepl. Ankunft)';
+      this.tableHeader[0] = 'Time (Arrival)';
     } else {
-      this.tableHeader[0] = 'Uhrzeit (Gepl. Abfahrt)';
+      this.tableHeader[0] = 'Time (Departure)';
     }
 
     this.apiService.isLoading = true;

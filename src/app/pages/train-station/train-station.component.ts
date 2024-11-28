@@ -18,7 +18,7 @@ import {AutoCompletionComponent} from "../../util/auto-completion/auto-completio
 })
 export class TrainStationComponent implements OnInit{
   public currentTrainStation: string = "";
-  public tableHeaders: string[] = ['Station', 'WLAN', 'Parkplatz', 'barrierefrei', 'Fahrstuhl', 'Adresse']
+  public tableHeaders: string[] = ['Station', 'WiFi', 'Parking', 'Stepless Access', 'Elevator', 'Address']
   public tableData: string[][] = [];
 
   constructor(protected apiService: ApiService, private router: Router, protected dataVerifier: DataVerifierService) {
@@ -38,7 +38,6 @@ export class TrainStationComponent implements OnInit{
   ngOnInit(): void {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        console.log('Page visited by redirect:', event.urlAfterRedirects);
         // set loading to true after angular router navigation
         this.apiService.isLoading = true;
       }
@@ -71,7 +70,7 @@ export class TrainStationComponent implements OnInit{
     }
 
     // update listed trainstation
-    this.currentTrainStation = 'Lädt..';
+    this.currentTrainStation = 'Loading..';
     this.apiService.isLoading = true;
     setTimeout(() => {this.mapStationsToTableData(); }, 1000);
   }
