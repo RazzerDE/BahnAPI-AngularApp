@@ -3,7 +3,6 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { ApiService } from './api.service';
 import { environment } from './types/environment';
 import {StationDataResponse} from './types/station-data';
-import {Timetable} from "./types/timetables";
 import {Stations} from "./types/stations";
 import {of, throwError} from "rxjs";
 import {DataVerifierService} from "../data-verifier/data-verifier.service";
@@ -132,5 +131,16 @@ describe('ApiService', () => {
 
     expect(dataVerifier.stations.length).toBe(2);
     expect(dataVerifier.stations).toEqual(dummyStations.result);
+  });
+
+  it('should handle invalid station start correctly', (done) => {
+    jest.spyOn(service, 'fetchStation').mockReturnValue(of('Invalid Station'));
+    jest.spyOn(dataVerifier, 'toggleErrorAlert').mockImplementation(() => {});
+
+    service.getTimetableData('Invalid Station');
+
+    expect(dataVerifier.station_stops).toBeUndefined();
+    expect(dataVerifier.toggleErrorAlert).toHaveBeenCalledWith('invalid_station_start');
+    done();
   });
 });
