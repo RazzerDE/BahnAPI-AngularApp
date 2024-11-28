@@ -15,12 +15,14 @@ export class HeaderComponent implements OnInit {
     this.isDark = this.getThemeFromLocalStorage();
   }
 
-  ngOnInit(): void { this.applyTheme(); }
+  ngOnInit(): void {
+    this.applyTheme();
+  }
 
   /**
-   * Retrieves the theme preference from local storage or the user's system settings.
+   * Ruft die Theme-Einstellung aus dem lokalen Speicher oder den Systemeinstellungen des Benutzers ab.
    *
-   * @returns {boolean} - `true` if the theme is dark, otherwise `false`.
+   * @returns {boolean} - `true`, wenn das Theme dunkel ist, andernfalls `false`.
    */
   private getThemeFromLocalStorage(): boolean {
     const darkMode = localStorage.getItem('dark');
@@ -28,12 +30,12 @@ export class HeaderComponent implements OnInit {
       return darkMode === 'true';
     }
 
-    // check user's system theme
+    // überprüfe, ob der Benutzer das Betriebssystem-Theme verwendet
     return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
   }
 
   /**
-   * Toggles the theme between light and dark mode.
+   * Wechselt das Theme zwischen hellem und dunklem Modus.
    */
   toggleTheme(): void {
     this.isDark = !this.isDark;
@@ -42,7 +44,7 @@ export class HeaderComponent implements OnInit {
   }
 
   /**
-   * Applies the current theme to the document
+   * Wendet das aktuelle Theme auf das Dokument an
    */
   private applyTheme(): void {
     const html: HTMLHtmlElement = document.querySelector('html') as HTMLHtmlElement;
