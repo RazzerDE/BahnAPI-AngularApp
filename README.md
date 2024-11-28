@@ -5,7 +5,7 @@
 <p align="center">
   <i align="center">Learn to work with API-REST Services in Typescript.<br />Developed using Angular with an HTML-Stack.</i>
 
-  ![image](https://i.imgur.com/GFax1ym.png)
+  ![image](https://i.imgur.com/XSOdioD.png)
 
 </p>
 
