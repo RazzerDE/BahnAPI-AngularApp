@@ -1,15 +1,19 @@
 import {Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {DataVerifierService} from "../../services/data-verifier/data-verifier.service";
+import {NgClass} from "@angular/common";
 
 @Component({
   selector: 'app-auto-completion',
   standalone: true,
-  imports: [],
+  imports: [
+    NgClass
+  ],
   templateUrl: './auto-completion.component.html',
   styleUrl: './auto-completion.component.css'
 })
 export class AutoCompletionComponent {
   @Input() input_field: HTMLInputElement | undefined;
+  @Input() position: 'top' | 'bottom' = 'bottom';
   @ViewChild('autoCompletionMenu') autoCompletionMenu!: ElementRef;
 
   constructor(protected dataVerifier: DataVerifierService) {}
