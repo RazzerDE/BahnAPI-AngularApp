@@ -33,7 +33,7 @@
       </div>
 
       <!-- Auto completion Menu -->
-      <app-auto-completion [input_field]="start_station"></app-auto-completion>
+      <app-auto-completion [input_field]="start_station" [position]="'top'" #completion_start></app-auto-completion>
     </div>
     <div class="relative text-gray-500 focus-within:text-red-600 dark:focus-within:text-red-400 slide-in
                 transition-all duration-300 ease-out translate-x-0 max-w-2xl" [class.hidden]="!showRoutePlaning">
@@ -56,9 +56,6 @@
             C179.265,127.948,165.464,141.901,148.5,141.901z"/>
         </svg>
       </div>
-
-      <!-- Auto completion Menu -->
-      <app-auto-completion [input_field]="end_station"></app-auto-completion>
     </div>
     <button type="submit" (click)="updateTrainData()" [disabled]="isSearchBtnDisabled()" [ngClass]="{'!bg-red-900': isSearchBtnDisabled()}"
             class="flex items-center justify-between px-4 py-2 text-sm font-medium text-white transition-colors

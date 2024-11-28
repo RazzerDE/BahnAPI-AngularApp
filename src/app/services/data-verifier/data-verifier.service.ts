@@ -160,17 +160,19 @@ export class DataVerifierService {
     const autoCompletionMenu: HTMLDivElement = document.getElementById('autoCompletionMenu') as HTMLDivElement;
     if (!autoCompletionMenu) { return; }
 
-    if (this.station_names.length === 0 || input.value.length === 0 || this.filtered_station_names.length === 0 || this.station_names.includes(input.value)) {
-      if (!autoCompletionMenu.classList.contains('hidden')) {
-        autoCompletionMenu.classList.add('hidden');
+    if (this.station_names.length > 0 && input.value.length > 0 && !this.station_names.includes(input.value)) {
+      console.log(this.station_names)
+      // find only entries that start with the input value
+      this.filtered_station_names = this.station_names.filter((station: string): boolean => station.toLowerCase().startsWith(input.value.toLowerCase()));
+      console.log(this.filtered_station_names);
+      if (autoCompletionMenu.classList.contains('hidden') && this.filtered_station_names.length > 0) {
+        autoCompletionMenu.classList.remove('hidden');
       }
     }
 
-    if (this.station_names.length > 0 && input.value.length > 0 && !this.station_names.includes(input.value)) {
-      // find only entries that start with the input value
-      this.filtered_station_names = this.station_names.filter((station: string): boolean => station.toLowerCase().startsWith(input.value.toLowerCase()));
-      if (autoCompletionMenu.classList.contains('hidden') && this.filtered_station_names.length > 0) {
-        autoCompletionMenu.classList.remove('hidden');
+    if (this.station_names.length === 0 || input.value.length === 0 || this.filtered_station_names.length === 0 || this.station_names.includes(input.value)) {
+      if (!autoCompletionMenu.classList.contains('hidden')) {
+        autoCompletionMenu.classList.add('hidden');
       }
     }
   }
@@ -187,8 +189,6 @@ export class DataVerifierService {
       if (!this.station_names.includes(station)) {
         this.station_names.push(station);
       }
-    } else {
-      this.station_names = station.map((stationData: StationData): string => stationData.name);
     }
 
     // update cache
