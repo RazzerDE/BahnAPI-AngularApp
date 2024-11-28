@@ -60,7 +60,9 @@ describe('AutoCompletionComponent', () => {
     const focusSpy = jest.spyOn(component.input_field, 'focus');
     const dispatchEventSpy = jest.spyOn(component.input_field, 'dispatchEvent');
 
+    jest.useFakeTimers();
     (component as any).updateStationValue(stationName);
+    jest.advanceTimersByTime(100);
 
     expect(focusSpy).toHaveBeenCalled();
     setTimeout(() => {
