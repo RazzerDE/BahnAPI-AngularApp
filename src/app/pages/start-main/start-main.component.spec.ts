@@ -233,7 +233,6 @@ describe('StartMainComponent', () => {
 
     (component as any).end_station_name = '';
     (component as any).mapStationsToTableData();
-    console.log((component as any).tableData);
     expect((component as any).tableData[1][5]).toBe('');
   });
 
