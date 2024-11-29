@@ -29,8 +29,8 @@ export class TableComponent {
         const alert_info = document.getElementById('alert_info') as HTMLSpanElement;
 
         if (this.alert_box && this.alert_box.nativeElement.classList.contains('hidden')) {
-          alert_title.innerText = 'API-Credentials invalid!';
-          alert_info.innerHTML = 'Please check if the API-credentials in <code>src/app/services/types/environment.ts</code> are correct';
+          alert_title.innerText = 'API-Daten ungültig!';
+          alert_info.innerHTML = 'Überprüfe, ob die API-Daten in der Datei <code>src/app/services/types/environment.ts</code> korrekt sind.';
           this.alert_box.nativeElement.classList.remove('hidden');
         }
 
