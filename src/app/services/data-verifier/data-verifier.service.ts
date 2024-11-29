@@ -51,23 +51,20 @@ export class DataVerifierService {
     const temp_current_station: string | null = localStorage.getItem('current_station');
     const temp_station_names: string | null = localStorage.getItem('station_names');
     if (temp_stations && temp_stations.length > 0) {
-      this.stations = JSON.parse(localStorage.getItem('stations') || '');
+      this.stations = JSON.parse(<string>localStorage.getItem('stations'));
     }
 
     if (temp_elevators && temp_elevators.length > 0) {
-      this.elevators = JSON.parse(localStorage.getItem('elevators') || '');
+      this.elevators = JSON.parse(<string>localStorage.getItem('elevators'));
     }
 
     if (temp_station_names && temp_station_names.length > 0) {
-      this.station_names = JSON.parse(localStorage.getItem('station_names') || '');
+      this.station_names = JSON.parse(<string>localStorage.getItem('station_names'));
     }
 
     if (temp_current_station) {
-      if (this.current_station === undefined) {
-        localStorage.removeItem('current_station');
-        return;
-      }
-      this.current_station = JSON.parse(localStorage.getItem('current_station') || '');
+      if (this.current_station === undefined) { localStorage.removeItem('current_station'); return; }
+      this.current_station = JSON.parse(<string>localStorage.getItem('current_station'));
     }
   }
 
