@@ -35,7 +35,9 @@ describe('TableComponent', () => {
     alertBox.classList.add('hidden');
     component.alert_box = { nativeElement: alertBox } as ElementRef;
 
+    jest.useFakeTimers();
     apiService.isInvalidKey.next(true);
+    jest.advanceTimersByTime(50);
 
     expect(apiService.isLoading).toBe(false);
     expect(alertBox.classList.contains('hidden')).toBe(false);

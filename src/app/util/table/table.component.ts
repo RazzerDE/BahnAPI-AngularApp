@@ -24,12 +24,19 @@ export class TableComponent {
     this.apiService.isInvalidKey.subscribe((_value: boolean) => {
       this.apiService.isLoading = false;
 
-      if (this.alert_box && this.alert_box.nativeElement.classList.contains('hidden')) {
-        this.alert_box.nativeElement.classList.remove('hidden');
-      }
+      setTimeout(() => {
+        const alert_title = document.getElementById('alert_title') as HTMLHeadingElement;
+        const alert_info = document.getElementById('alert_info') as HTMLSpanElement;
 
-      this.dataVerifier.stations = [];
-      this.dataVerifier.elevators = [];
+        if (this.alert_box && this.alert_box.nativeElement.classList.contains('hidden')) {
+          alert_title.innerText = 'API-Credentials invalid!';
+          alert_info.innerHTML = 'Please check if the API-credentials in <code>src/app/services/types/environment.ts</code> are correct';
+          this.alert_box.nativeElement.classList.remove('hidden');
+        }
+
+        this.dataVerifier.stations = [];
+        this.dataVerifier.elevators = [];
+      }, 50);
 
     });
   }
