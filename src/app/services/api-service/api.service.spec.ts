@@ -6,6 +6,7 @@ import {StationDataResponse} from './types/station-data';
 import {Station, Stations} from "./types/stations";
 import {of, throwError} from "rxjs";
 import {DataVerifierService} from "../data-verifier/data-verifier.service";
+import {Timetable} from "./types/timetables";
 
 describe('ApiService', () => {
   let service: ApiService;
@@ -279,13 +280,183 @@ describe('ApiService', () => {
     expect(localStorage.getItem('elevators')).toEqual(JSON.stringify(dummyElevators));
   });
 
+  it('should handle 404 error when fetching timetable data', (done) => {
+    const errorResponse = { status: 404, statusText: 'Not Found' };
+
+    jest.spyOn(service, 'fetchStation').mockReturnValue(throwError(() => errorResponse));
+    jest.spyOn(dataVerifier, 'toggleErrorAlert').mockImplementation(() => {});
+
+    service.getTimetableData('Invalid Station');
+
+    setTimeout(() => {
+      expect(dataVerifier.toggleErrorAlert).toHaveBeenCalledWith('invalid_station_start');
+      done();
+    }, 0);
+  });
+
   it('should handle error when fetching elevator facilities', () => {
-    const errorResponse = { status: 500, statusText: 'Server Error' };
+    const errorResponse = { status: 500, statusText: 'Internal Server Error' };
+
+    jest.spyOn(service, 'fetchFacilities').mockReturnValue(throwError(() => errorResponse));
+    jest.spyOn(console, 'error').mockImplementation(() => {});
 
     service.checkStationsForElevator();
 
-    const req = httpMock.expectOne(`${environment.API_URL}fasta/v2/facilities?type=ELEVATOR&state=ACTIVE`);
-    expect(req.request.method).toBe('GET');
-    req.flush('Error fetching facilities', errorResponse);
+    expect(console.error).toHaveBeenCalledWith(errorResponse);
+  });
+
+  it('should fetch planned data and process it correctly', (done) => {
+    const dummyStation = { eva: '123456', name: 'Station 1' } as unknown as Station;
+    const dummyTimetable = { timetable: { stop: 'Stop 1' } } as unknown as Timetable;
+    const date = '241120';
+    const hour = '21';
+
+    jest.spyOn(service, 'fetchStation').mockReturnValue(of({ station: dummyStation }));
+    jest.spyOn(service, 'fetchPlannedData').mockReturnValue(of(dummyTimetable));
+    jest.spyOn(dataVerifier, 'updateStationList').mockImplementation(() => {});
+
+    service.getTimetableData('Station 1', date, hour);
+
+    setTimeout(() => {
+      expect(dataVerifier.current_station).toEqual(dummyStation);
+      expect(localStorage.getItem('current_station')).toEqual(JSON.stringify(dummyStation));
+      expect(dataVerifier.updateStationList).toHaveBeenCalledWith(dummyStation.name);
+      expect(dataVerifier.station_stops).toEqual(dummyTimetable);
+      done();
+    }, 0);
+  });
+
+  it('should handle 401 error when fetching timetable data', (done) => {
+    const errorResponse = { status: 401, statusText: 'Unauthorized' };
+
+    jest.spyOn(service, 'fetchStation').mockReturnValue(throwError(() => errorResponse));
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    service.getTimetableData('Station 1');
+
+    setTimeout(() => {
+      expect(service.isInvalidKey.value).toBe(true);
+      expect(console.error).toHaveBeenCalledWith(errorResponse);
+      done();
+    }, 0);
+  });
+
+
+
+
+
+
+
+
+
+
+  it('should handle invalid end station correctly', (done) => {
+    const dummyStation = { station: { name: 'Station 1', eva: '123456' } } as unknown as Stations;
+    const dummyTimetable = { s: [{ stopName: 'Stop 1' }, { stopName: 'Stop 2' }] };
+
+    jest.spyOn(service, 'fetchStation').mockReturnValueOnce(of(dummyStation));
+    jest.spyOn(service, 'fetchPlannedData').mockReturnValue(of(dummyTimetable));
+    jest.spyOn(service, 'fetchStation').mockReturnValueOnce(of('Invalid Station'));
+    jest.spyOn(dataVerifier, 'toggleErrorAlert').mockImplementation(() => {});
+
+    service.getTimetableData('Station 1', '241120', '21', 'Invalid Station');
+
+    setTimeout(() => {
+      expect(dataVerifier.current_station).toEqual(dummyStation.station);
+      expect(localStorage.getItem('current_station')).toEqual(JSON.stringify(dummyStation.station));
+      expect(dataVerifier.station_stops).toBeUndefined();
+      expect(dataVerifier.toggleErrorAlert).toHaveBeenCalledWith('invalid_station_end');
+      done();
+    }, 0);
+  });
+
+  it('should handle valid end station correctly', (done) => {
+    const dummyStation = { station: { name: 'Station 1', eva: '123456' } } as unknown as Stations;
+    const dummyEndStation = { station: { name: 'Station 2', eva: '654321' } } as unknown as Stations;
+    const dummyTimetable = {
+      s: [
+        { id: 1, tl: 'TL1', stopName: 'Stop 1' },
+        { id: 2, tl: 'TL2', stopName: 'Stop 2' }
+      ]
+    } as unknown as Timetable;
+
+    jest.spyOn(service, 'fetchStation').mockReturnValueOnce(of(dummyStation));
+    jest.spyOn(service, 'fetchPlannedData').mockReturnValue(of(dummyTimetable));
+    jest.spyOn(service, 'fetchStation').mockReturnValueOnce(of(dummyEndStation));
+    jest.spyOn(dataVerifier, 'updateStationList').mockImplementation(() => {});
+    jest.spyOn(dataVerifier, 'toggleErrorAlert').mockImplementation(() => {});
+    jest.spyOn(dataVerifier, 'filterDirectRoutes').mockReturnValue(dummyTimetable.s);
+
+    service.getTimetableData('Station 1', '241120', '21', 'Station 2');
+
+    setTimeout(() => {
+      expect(dataVerifier.current_station).toEqual(dummyStation.station);
+      expect(localStorage.getItem('current_station')).toEqual(JSON.stringify(dummyStation.station));
+      expect(dataVerifier.station_stops).toEqual({ ...dummyTimetable, s: dummyTimetable.s });
+      expect(dataVerifier.updateStationList).toHaveBeenCalledWith(dummyEndStation.station.name);
+      expect(dataVerifier.toggleErrorAlert).toHaveBeenCalled();
+      done();
+    }, 0);
+  });
+
+
+  it('should handle valid end station correctly', (done) => {
+    const dummyStation = { station: { name: 'Station 1', eva: '123456' } } as unknown as Stations;
+    const dummyEndStation = { station: { name: 'Station 2', eva: '654321' } } as unknown as Stations;
+    const dummyTimetable = {
+      s: [
+        { id: 1, tl: 'TL1', stopName: 'Stop 1' },
+        { id: 2, tl: 'TL2', stopName: 'Stop 2' }
+      ]
+    } as unknown as Timetable;
+
+    jest.spyOn(service, 'fetchStation').mockReturnValueOnce(of(dummyStation));
+    jest.spyOn(service, 'fetchPlannedData').mockReturnValue(of(dummyTimetable));
+    jest.spyOn(service, 'fetchStation').mockReturnValueOnce(of(dummyEndStation));
+    jest.spyOn(dataVerifier, 'updateStationList').mockImplementation(() => {});
+    jest.spyOn(dataVerifier, 'toggleErrorAlert').mockImplementation(() => {});
+    jest.spyOn(dataVerifier, 'filterDirectRoutes').mockReturnValue(dummyTimetable.s);
+
+    service.getTimetableData('Station 1', '241120', '21', 'Station 2');
+
+    setTimeout(() => {
+      expect(dataVerifier.current_station).toEqual(dummyStation.station);
+      expect(localStorage.getItem('current_station')).toEqual(JSON.stringify(dummyStation.station));
+      expect(dataVerifier.station_stops).toEqual({ ...dummyTimetable, s: dummyTimetable.s });
+      expect(dataVerifier.updateStationList).toHaveBeenCalledWith(dummyEndStation.station.name);
+      expect(dataVerifier.toggleErrorAlert).toHaveBeenCalled();
+      done();
+    }, 0);
+  });
+
+
+
+
+  it('should handle error when fetching end station data', (done) => {
+    const dummyStation = { station: { name: 'Station 1', eva: '123456' } } as unknown as Stations;
+    const dummyTimetable = {
+      s: [
+        { id: 1, tl: 'TL1', stopName: 'Stop 1' },
+        { id: 2, tl: 'TL2', stopName: 'Stop 2' }
+      ]
+    } as unknown as Timetable;
+    const errorResponse = { status: 500, statusText: 'Internal Server Error' };
+
+    jest.spyOn(service, 'fetchStation').mockReturnValueOnce(of(dummyStation));
+    jest.spyOn(service, 'fetchPlannedData').mockReturnValue(of(dummyTimetable));
+    jest.spyOn(service, 'fetchStation').mockReturnValueOnce(throwError(() => errorResponse));
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(dataVerifier, 'toggleErrorAlert').mockImplementation(() => {});
+
+    service.getTimetableData('Station 1', '241120', '21', 'Station 2');
+
+    setTimeout(() => {
+      expect(dataVerifier.current_station).toEqual(dummyStation.station);
+      expect(localStorage.getItem('current_station')).toEqual(JSON.stringify(dummyStation.station));
+      expect(dataVerifier.station_stops).toBeUndefined();
+      expect(dataVerifier.toggleErrorAlert).not.toHaveBeenCalledWith('invalid_station_end');
+      expect(console.error).toHaveBeenCalledWith(errorResponse);
+      done();
+    }, 0);
   });
 });
